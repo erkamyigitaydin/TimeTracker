@@ -13,19 +13,35 @@ export default function DailyEntryScreen() {
   const { saveEntry } = useEmployee();
 
   const [project, setProject] = useState(MOCK_PROJECTS[0]);
-  const [hours, setHours] = useState("");
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("18:00");
   const [description, setDescription] = useState("");
 
+  const calculateHours = (start: string, end: string) => {
+    const [startH, startM] = start.split(':').map(Number);
+    const [endH, endM] = end.split(':').map(Number);
+    
+    if (isNaN(startH) || isNaN(startM) || isNaN(endH) || isNaN(endM)) return 0;
+    
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+    
+    const diff = endMinutes - startMinutes;
+    return diff > 0 ? Number((diff / 60).toFixed(2)) : 0;
+  };
+
   const handleSave = () => {
-    if (!hours || isNaN(Number(hours))) {
-      alert("Please enter valid hours");
+    const calculatedHours = calculateHours(startTime, endTime);
+
+    if (calculatedHours <= 0) {
+      alert("Please check start and end times. Format HH:MM");
       return;
     }
 
     saveEntry(dateStr, {
       id: Date.now().toString(),
       projectId: project,
-      hours: Number(hours),
+      hours: calculatedHours,
       description,
     });
 
@@ -38,6 +54,12 @@ export default function DailyEntryScreen() {
 
       <View style={styles.form}>
         <Text style={styles.label}>Project</Text>
+        <TextInput
+          style={styles.input}
+          value={project}
+          onChangeText={setProject}
+          placeholder="Enter project name"
+        />
         <View style={styles.projectSelector}>
           {MOCK_PROJECTS.map((p) => (
             <Text
@@ -50,14 +72,26 @@ export default function DailyEntryScreen() {
           ))}
         </View>
 
-        <Text style={styles.label}>Hours</Text>
-        <TextInput
-          style={styles.input}
-          value={hours}
-          onChangeText={setHours}
-          keyboardType="numeric"
-          placeholder="e.g. 8"
-        />
+        <View style={styles.row}>
+          <View style={styles.halfInput}>
+            <Text style={styles.label}>Start Time</Text>
+            <TextInput
+              style={styles.input}
+              value={startTime}
+              onChangeText={setStartTime}
+              placeholder="09:00"
+            />
+          </View>
+          <View style={styles.halfInput}>
+            <Text style={styles.label}>End Time</Text>
+            <TextInput
+              style={styles.input}
+              value={endTime}
+              onChangeText={setEndTime}
+              placeholder="18:00"
+            />
+          </View>
+        </View>
 
         <Text style={styles.label}>Description</Text>
         <TextInput
@@ -107,5 +141,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
+  row: { flexDirection: "row", gap: 12 },
+  halfInput: { flex: 1 },
   actions: { gap: 12 },
 });

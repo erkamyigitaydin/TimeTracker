@@ -3,19 +3,14 @@ import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import { useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { useEffect } from "react";
 import { Button, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useEmployee } from "../../context/EmployeeContext";
 
 export default function EmployeeHomeScreen() {
   const { logout } = useAuth();
-  const { currentMonth, nextMonth, prevMonth, getPdf, getEntries, goToCurrentMonth } = useEmployee();
+  const { currentMonth, nextMonth, prevMonth, getPdf, getEntries } = useEmployee();
   const router = useRouter();
-
-  useEffect(() => {
-    goToCurrentMonth();
-  }, [goToCurrentMonth]);
 
   const monthKey = format(currentMonth, "yyyy-MM");
   const pdf = getPdf(monthKey);
