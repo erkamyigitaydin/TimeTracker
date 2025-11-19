@@ -1,7 +1,7 @@
 // app/(auth)/create-account.tsx
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 
 type Role = "employee" | "accountant";
@@ -23,61 +23,69 @@ export default function CreateAccountScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View style={styles.inner}>
+          <Text style={styles.title}>Create Account</Text>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="e-mail"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-      </View>
+            <TextInput
+              style={styles.input}
+              placeholder="password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
 
-      <Text style={styles.label}>Select Role</Text>
-      <View style={styles.roleContainer}>
-        <TouchableOpacity
-          style={[
-            styles.roleButton,
-            role === "employee" && styles.roleButtonActive,
-          ]}
-          onPress={() => setRoleState("employee")}
-        >
-          <Text style={[styles.roleText, role === "employee" && styles.roleTextActive]}>Employee</Text>
-        </TouchableOpacity>
+          <Text style={styles.label}>Select Role</Text>
+          <View style={styles.roleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.roleButton,
+                role === "employee" && styles.roleButtonActive,
+              ]}
+              onPress={() => setRoleState("employee")}
+            >
+              <Text style={[styles.roleText, role === "employee" && styles.roleTextActive]}>Employee</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.roleButton,
-            role === "accountant" && styles.roleButtonActive,
-          ]}
-          onPress={() => setRoleState("accountant")}
-        >
-          <Text style={[styles.roleText, role === "accountant" && styles.roleTextActive]}>Accountant</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity
+              style={[
+                styles.roleButton,
+                role === "accountant" && styles.roleButtonActive,
+              ]}
+              onPress={() => setRoleState("accountant")}
+            >
+              <Text style={[styles.roleText, role === "accountant" && styles.roleTextActive]}>Accountant</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Create Account" onPress={handleCreate} />
-        <Button title="Back to Login" onPress={() => router.back()} color="#666" />
-      </View>
-    </View>
+          <View style={styles.buttonContainer}>
+            <Button title="Create Account" onPress={handleCreate} />
+            <Button title="Back to Login" onPress={() => router.back()} color="#666" />
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: "center", backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#fff" },
+  inner: { flex: 1, padding: 24, justifyContent: "center" },
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 32, textAlign: "center", color: "#333" },
   inputContainer: { gap: 16, marginBottom: 24 },
   input: {
