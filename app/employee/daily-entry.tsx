@@ -27,7 +27,7 @@ export default function DailyEntryScreen() {
     const endMinutes = endH * 60 + endM;
     
     const diff = endMinutes - startMinutes;
-    return diff > 0 ? Number((diff / 60).toFixed(2)) : 0;
+    return diff > 0 ? Number((diff / 60).toFixed(1)) : 0;
   };
 
   const handleSave = () => {

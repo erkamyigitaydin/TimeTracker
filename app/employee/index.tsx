@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { addDays, format, getDaysInMonth, startOfMonth } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
@@ -19,7 +20,6 @@ export default function EmployeeHomeScreen() {
     if (!pdf?.uri) return;
 
     try {
-      // Check if we can share (mostly for web compatibility check, but good practice)
       const isAvailable = await Sharing.isAvailableAsync();
       
       if (Platform.OS === "android") {
@@ -64,14 +64,22 @@ export default function EmployeeHomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header & Month Selector */}
+      {/* Title Bar */}
+      <View style={styles.titleBar}>
+        <Text style={styles.pageTitle}>Employee Page</Text>
+        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
+          <Feather name="log-out" size={24} color="#FF3B30" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Month Selector */}
       <View style={styles.header}>
         <TouchableOpacity onPress={prevMonth}>
           <Text style={styles.navText}>{"<"}</Text>
         </TouchableOpacity>
         <Text style={styles.monthTitle}>{format(currentMonth, "MMMM yyyy")}</Text>
         <TouchableOpacity onPress={nextMonth}>
-          <Text style={styles.navText}>{">"}</Text>
+          <Text style={styles.navText}>{'>'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -79,7 +87,7 @@ export default function EmployeeHomeScreen() {
         {/* Summary Cards */}
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{totalHoursMonth}h</Text>
+            <Text style={styles.summaryValue}>{totalHoursMonth.toFixed(1)}h</Text>
             <Text style={styles.summaryLabel}>Total Hours</Text>
           </View>
           <View style={styles.summaryCard}>
@@ -125,15 +133,11 @@ export default function EmployeeHomeScreen() {
             >
               <View>
                 <Text style={styles.dayDate}>{format(day.date, "EEE, MMM d")}</Text>
-                <Text style={styles.dayHours}>{day.totalHours}h logged</Text>
+                <Text style={styles.dayHours}>{day.totalHours.toFixed(1)}h logged</Text>
               </View>
-              <Text style={styles.chevron}>{">"}</Text>
+              <Text style={styles.chevron}>{'>'}</Text>
             </TouchableOpacity>
           ))}
-        </View>
-
-        <View style={styles.logoutContainer}>
-          <Button title="Logout" onPress={logout} color="#FF3B30" />
         </View>
       </ScrollView>
     </View>
@@ -142,11 +146,27 @@ export default function EmployeeHomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
+  titleBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  pageTitle: { fontSize: 20, fontWeight: "700", color: "#333" },
+  logoutButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  logoutIcon: { fontSize: 24, color: "#FF3B30", fontWeight: "600" },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 50,
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
@@ -196,6 +216,4 @@ const styles = StyleSheet.create({
   dayDate: { fontSize: 16, fontWeight: "500" },
   dayHours: { fontSize: 14, color: "#666" },
   chevron: { fontSize: 18, color: "#ccc", fontWeight: "bold" },
-
-  logoutContainer: { marginTop: 20 },
 });

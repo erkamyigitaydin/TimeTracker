@@ -1,5 +1,6 @@
-import { addMonths, format, startOfMonth, subDays, subMonths } from "date-fns";
+import { addMonths, format, startOfMonth, subMonths } from "date-fns";
 import React, { createContext, ReactNode, useContext, useState } from "react";
+import { ALL_EMPLOYEES, generateEmployeeMockData } from "./mockData";
 
 export type DailyEntry = {
   id: string;
@@ -15,6 +16,8 @@ export type PdfRecord = {
 };
 
 type EmployeeContextType = {
+  currentEmployeeId: string;
+  currentEmployeeName: string;
   currentMonth: Date;
   nextMonth: () => void;
   prevMonth: () => void;
@@ -33,48 +36,65 @@ type EmployeeContextType = {
 
 const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);
 
-// Mock Data Generation
-const generateMockData = () => {
-  const today = new Date();
-  const currentMonthKey = format(today, "yyyy-MM");
-  const yesterdayKey = format(subDays(today, 1), "yyyy-MM-dd");
-  const todayKey = format(today, "yyyy-MM-dd");
-  const twoDaysAgoKey = format(subDays(today, 2), "yyyy-MM-dd");
-
-  const mockPdfs: Record<string, PdfRecord> = {
-    [currentMonthKey]: {
-      uri: "mock-uri",
-      name: `Report_${format(today, "MMMM")}.pdf`,
-      uploadDate: subDays(today, 5).toISOString(),
-    },
-  };
-
-  const mockEntries: Record<string, DailyEntry[]> = {
-    [twoDaysAgoKey]: [
-      { id: "1", projectId: "Project A", hours: 8, description: "Initial setup and requirements" },
-    ],
-    [yesterdayKey]: [
-      { id: "2", projectId: "Project A", hours: 4, description: "Frontend development" },
-      { id: "3", projectId: "Internal", hours: 2, description: "Team meeting" },
-    ],
-    [todayKey]: [
-      { id: "4", projectId: "Project B", hours: 5, description: "API integration" },
-    ],
-  };
-
+// Load mock data for current employee and month
+const loadMockDataForMonth = (employeeId: string, employeeName: string, month: Date) => {
+  const mockData = generateEmployeeMockData(employeeId, employeeName, month);
+  const monthKey = format(month, "yyyy-MM");
+  
+  const mockPdfs: Record<string, PdfRecord> = {};
+  if (mockData.pdf) {
+    mockPdfs[monthKey] = mockData.pdf;
+  }
+  
+  const mockEntries: Record<string, DailyEntry[]> = {};
+  mockData.entries.forEach(entry => {
+    if (!mockEntries[entry.date]) {
+      mockEntries[entry.date] = [];
+    }
+    mockEntries[entry.date].push(entry);
+  });
+  
   return { mockPdfs, mockEntries };
 };
 
 export function EmployeeProvider({ children }: { children: ReactNode }) {
-  const { mockPdfs, mockEntries } = generateMockData();
-  
+  // Use first employee as logged-in user
+  const currentEmployee = ALL_EMPLOYEES[0];
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
-  const [pdfs, setPdfs] = useState<Record<string, PdfRecord>>(mockPdfs);
-  const [entries, setEntries] = useState<Record<string, DailyEntry[]>>(mockEntries);
+  
+  // Initialize with current month's data
+  const initialData = loadMockDataForMonth(currentEmployee.id, currentEmployee.name, startOfMonth(new Date()));
+  const [pdfs, setPdfs] = useState<Record<string, PdfRecord>>(initialData.mockPdfs);
+  const [entries, setEntries] = useState<Record<string, DailyEntry[]>>(initialData.mockEntries);
+  const [loadedMonths, setLoadedMonths] = useState<Set<string>>(new Set([format(startOfMonth(new Date()), "yyyy-MM")]));
 
-  const nextMonth = () => setCurrentMonth((prev) => addMonths(prev, 1));
-  const prevMonth = () => setCurrentMonth((prev) => subMonths(prev, 1));
-  const goToCurrentMonth = () => setCurrentMonth(startOfMonth(new Date()));
+  const loadMonthDataIfNeeded = (month: Date) => {
+    const monthKey = format(month, "yyyy-MM");
+    if (!loadedMonths.has(monthKey)) {
+      const data = loadMockDataForMonth(currentEmployee.id, currentEmployee.name, month);
+      setPdfs(prev => ({ ...prev, ...data.mockPdfs }));
+      setEntries(prev => ({ ...prev, ...data.mockEntries }));
+      setLoadedMonths(prev => new Set([...prev, monthKey]));
+    }
+  };
+
+  const nextMonth = () => {
+    const newMonth = addMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+    loadMonthDataIfNeeded(newMonth);
+  };
+  
+  const prevMonth = () => {
+    const newMonth = subMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+    loadMonthDataIfNeeded(newMonth);
+  };
+  
+  const goToCurrentMonth = () => {
+    const newMonth = startOfMonth(new Date());
+    setCurrentMonth(newMonth);
+    loadMonthDataIfNeeded(newMonth);
+  };
 
   const savePdf = (monthKey: string, pdf: PdfRecord) => {
     setPdfs((prev) => ({ ...prev, [monthKey]: pdf }));
@@ -96,6 +116,8 @@ export function EmployeeProvider({ children }: { children: ReactNode }) {
   return (
     <EmployeeContext.Provider
       value={{
+        currentEmployeeId: currentEmployee.id,
+        currentEmployeeName: currentEmployee.name,
         currentMonth,
         nextMonth,
         prevMonth,
