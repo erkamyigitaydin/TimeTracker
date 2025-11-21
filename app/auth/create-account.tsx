@@ -3,19 +3,19 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
-
-type Role = "employee" | "accountant";
+import { buttonLabels, labels, messages, placeholders, roles, screenTitles, type Role } from "../../src/constants/ui";
+import { colors, fontSizes, fontWeights, spacing } from "../theme";
 
 export default function CreateAccountScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRoleState] = useState<Role>("employee");
+  const [role, setRoleState] = useState<Role>(roles.employee);
   const { register } = useAuth();
   const router = useRouter();
 
   const handleCreate = () => {
     if (!email || !password) {
-      alert("Please fill in all fields");
+      alert(messages.fillAllFields);
       return;
     }
     // Register the user and auto-login
@@ -29,12 +29,12 @@ export default function CreateAccountScreen() {
         style={styles.container}
       >
         <View style={styles.inner}>
-          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.title}>{screenTitles.createAccount}</Text>
 
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="e-mail"
+              placeholder={placeholders.email}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -43,39 +43,39 @@ export default function CreateAccountScreen() {
 
             <TextInput
               style={styles.input}
-              placeholder="password"
+              placeholder={placeholders.password}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
             />
           </View>
 
-          <Text style={styles.label}>Select Role</Text>
+          <Text style={styles.label}>{labels.selectRole}</Text>
           <View style={styles.roleContainer}>
             <TouchableOpacity
               style={[
                 styles.roleButton,
-                role === "employee" && styles.roleButtonActive,
+                role === roles.employee && styles.roleButtonActive,
               ]}
-              onPress={() => setRoleState("employee")}
+              onPress={() => setRoleState(roles.employee)}
             >
-              <Text style={[styles.roleText, role === "employee" && styles.roleTextActive]}>Employee</Text>
+              <Text style={[styles.roleText, role === roles.employee && styles.roleTextActive]}>Employee</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.roleButton,
-                role === "accountant" && styles.roleButtonActive,
+                role === roles.accountant && styles.roleButtonActive,
               ]}
-              onPress={() => setRoleState("accountant")}
+              onPress={() => setRoleState(roles.accountant)}
             >
-              <Text style={[styles.roleText, role === "accountant" && styles.roleTextActive]}>Accountant</Text>
+              <Text style={[styles.roleText, role === roles.accountant && styles.roleTextActive]}>Accountant</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.buttonContainer}>
-            <Button title="Create Account" onPress={handleCreate} />
-            <Button title="Back to Login" onPress={() => router.back()} color="#666" />
+            <Button title={buttonLabels.createAccount} onPress={handleCreate} />
+            <Button title={buttonLabels.backToLogin} onPress={() => router.back()} color={colors.textSecondary} />
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -84,41 +84,41 @@ export default function CreateAccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  inner: { flex: 1, padding: 24, justifyContent: "center" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 32, textAlign: "center", color: "#333" },
-  inputContainer: { gap: 16, marginBottom: 24 },
+  container: { flex: 1, backgroundColor: colors.backgroundWhite },
+  inner: { flex: 1, padding: spacing.xl, justifyContent: "center" },
+  title: { fontSize: fontSizes.title, fontWeight: fontWeights.bold, marginBottom: spacing.xxl, textAlign: "center", color: colors.textPrimary },
+  inputContainer: { gap: spacing.lg, marginBottom: spacing.xl },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.borderDefault,
     borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: "#f9f9f9",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: fontSizes.lg,
+    backgroundColor: colors.backgroundLight,
   },
-  label: { fontSize: 16, fontWeight: "600", marginBottom: 12, color: "#333" },
-  roleContainer: { flexDirection: "row", gap: 12, marginBottom: 32 },
+  label: { fontSize: fontSizes.lg, fontWeight: fontWeights.semibold, marginBottom: spacing.md, color: colors.textPrimary },
+  roleContainer: { flexDirection: "row", gap: spacing.md, marginBottom: spacing.xxl },
   roleButton: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.borderDefault,
     borderRadius: 8,
-    padding: 16,
+    padding: spacing.lg,
     alignItems: "center",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colors.backgroundLight,
   },
   roleButtonActive: {
-    borderColor: "#007AFF",
-    backgroundColor: "#E3F2FD",
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
   roleText: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: fontSizes.lg,
+    color: colors.textSecondary,
   },
   roleTextActive: {
-    color: "#007AFF",
-    fontWeight: "600",
+    color: colors.primary,
+    fontWeight: fontWeights.semibold,
   },
-  buttonContainer: { gap: 12 },
+  buttonContainer: { gap: spacing.md },
 });

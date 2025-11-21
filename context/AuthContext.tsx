@@ -1,26 +1,27 @@
 // context/AuthContext.tsx
 import { useRouter } from "expo-router";
 import React, { createContext, ReactNode, useContext, useState } from "react";
+import { messages, roles, routes, type Role } from "../src/constants/ui";
 
-type Role = "employee" | "accountant" | null;
+type RoleOrNull = Role | null;
 
 type User = {
   email: string;
   password: string;
-  role: "employee" | "accountant";
+  role: Role;
 };
 
 type AuthContextType = {
-  role: Role;
+  role: RoleOrNull;
   login: (email: string, password: string) => void;
-  register: (email: string, password: string, role: "employee" | "accountant") => void;
+  register: (email: string, password: string, role: Role) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>(null);
+  const [role, setRole] = useState<RoleOrNull>(null);
   const [users, setUsers] = useState<User[]>([]);
   const router = useRouter();
 
@@ -28,20 +29,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user = users.find((u) => u.email === email && u.password === password);
     if (user) {
       setRole(user.role);
-      if (user.role === "employee") {
-        router.replace("/employee" as any);
-      } else if (user.role === "accountant") {
-        router.replace("/accountant" as any);
+      if (user.role === roles.employee) {
+        router.replace(routes.employee as any);
+      } else if (user.role === roles.accountant) {
+        router.replace(routes.accountant as any);
       }
     } else {
-      alert("Invalid email or password");
+      alert(messages.invalidCredentials);
     }
   };
 
-  const register = (email: string, password: string, role: "employee" | "accountant") => {
+  const register = (email: string, password: string, role: Role) => {
     // Check if user already exists
     if (users.some((u) => u.email === email)) {
-      alert("User already exists");
+      alert(messages.userExists);
       return;
     }
     
@@ -50,16 +51,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // Auto login after register
     setRole(role);
-    if (role === "employee") {
-      router.replace("/employee" as any);
-    } else if (role === "accountant") {
-      router.replace("/accountant" as any);
+    if (role === roles.employee) {
+      router.replace(routes.employee as any);
+    } else if (role === roles.accountant) {
+      router.replace(routes.accountant as any);
     }
   };
 
   const logout = () => {
     setRole(null);
-    router.replace("/auth" as any);
+    router.replace(routes.auth as any);
   };
 
   return (

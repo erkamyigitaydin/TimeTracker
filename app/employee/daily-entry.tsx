@@ -2,8 +2,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { useEmployee } from "../../context/EmployeeContext";
-
-const MOCK_PROJECTS = ["Project A", "Project B", "Internal", "Training"];
+import { buttonLabels, labels, messages, mockProjects, placeholders } from "../../src/constants/ui";
+import { colors, fontSizes, fontWeights, layout, spacing } from "../theme";
 
 export default function DailyEntryScreen() {
   const router = useRouter();
@@ -12,9 +12,9 @@ export default function DailyEntryScreen() {
   
   const { saveEntry } = useEmployee();
 
-  const [project, setProject] = useState(MOCK_PROJECTS[0]);
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("18:00");
+  const [project, setProject] = useState<string>(mockProjects[0]);
+  const [startTime, setStartTime] = useState<string>(placeholders.startTime);
+  const [endTime, setEndTime] = useState<string>(placeholders.endTime);
   const [description, setDescription] = useState("");
 
   const calculateHours = (start: string, end: string) => {
@@ -34,7 +34,7 @@ export default function DailyEntryScreen() {
     const calculatedHours = calculateHours(startTime, endTime);
 
     if (calculatedHours <= 0) {
-      alert("Please check start and end times. Format HH:MM");
+      alert(messages.checkStartEndTimes);
       return;
     }
 
@@ -53,15 +53,15 @@ export default function DailyEntryScreen() {
       <Text style={styles.title}>Add Entry for {dateStr}</Text>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Project</Text>
+        <Text style={styles.label}>{labels.project}</Text>
         <TextInput
           style={styles.input}
           value={project}
           onChangeText={setProject}
-          placeholder="Enter project name"
+          placeholder={placeholders.projectName}
         />
         <View style={styles.projectSelector}>
-          {MOCK_PROJECTS.map((p) => (
+          {mockProjects.map((p) => (
             <Text
               key={p}
               style={[styles.projectOption, project === p && styles.projectOptionActive]}
@@ -74,74 +74,74 @@ export default function DailyEntryScreen() {
 
         <View style={styles.row}>
           <View style={styles.halfInput}>
-            <Text style={styles.label}>Start Time</Text>
+            <Text style={styles.label}>{labels.startTime}</Text>
             <TextInput
               style={styles.input}
               value={startTime}
               onChangeText={setStartTime}
-              placeholder="09:00"
+              placeholder={placeholders.startTime}
             />
           </View>
           <View style={styles.halfInput}>
-            <Text style={styles.label}>End Time</Text>
+            <Text style={styles.label}>{labels.endTime}</Text>
             <TextInput
               style={styles.input}
               value={endTime}
               onChangeText={setEndTime}
-              placeholder="18:00"
+              placeholder={placeholders.endTime}
             />
           </View>
         </View>
 
-        <Text style={styles.label}>Description</Text>
+        <Text style={styles.label}>{labels.description}</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
           value={description}
           onChangeText={setDescription}
-          placeholder="What did you work on?"
+          placeholder={placeholders.workDescription}
           multiline
         />
       </View>
 
       <View style={styles.actions}>
-        <Button title="Save Entry" onPress={handleSave} />
-        <Button title="Cancel" onPress={() => router.back()} color="#666" />
+        <Button title={buttonLabels.saveEntry} onPress={handleSave} />
+        <Button title={buttonLabels.cancel} onPress={() => router.back()} color={colors.textSecondary} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, marginTop: 50,
-    padding: 10, backgroundColor: "#fff" },
-  title: { fontSize: 20, fontWeight: "600", marginBottom: 24, textAlign: "center" },
-  form: { gap: 16, marginBottom: 32 },
-  label: { fontWeight: "600", marginBottom: 4 },
+  container: { flex: 1, marginTop: layout.headerPaddingTopSmall,
+    padding: 10, backgroundColor: colors.backgroundWhite },
+  title: { fontSize: fontSizes.xxl, fontWeight: fontWeights.semibold, marginBottom: spacing.xl, textAlign: "center" },
+  form: { gap: spacing.lg, marginBottom: spacing.xxl },
+  label: { fontWeight: fontWeights.semibold, marginBottom: 4 },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.borderDefault,
     borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: "#f9f9f9",
+    padding: spacing.md,
+    fontSize: fontSizes.lg,
+    backgroundColor: colors.backgroundLight,
   },
   textArea: { height: 100, textAlignVertical: "top" },
-  projectSelector: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  projectSelector: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   projectOption: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#ddd",
-    color: "#666",
+    borderColor: colors.borderDefault,
+    color: colors.textSecondary,
   },
   projectOptionActive: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
-    color: "#fff",
-    fontWeight: "600",
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+    color: colors.white,
+    fontWeight: fontWeights.semibold,
   },
-  row: { flexDirection: "row", gap: 12 },
+  row: { flexDirection: "row", gap: spacing.md },
   halfInput: { flex: 1 },
-  actions: { gap: 12 },
+  actions: { gap: spacing.md },
 });

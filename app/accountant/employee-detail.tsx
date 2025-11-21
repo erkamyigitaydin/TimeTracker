@@ -4,6 +4,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Button, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAccountant } from "../../context/AccountantContext";
+import { buttonLabels, dateFormats, labels, messages, pdfStatus, symbols } from "../../src/constants/ui";
+import { colors, fontSizes, fontWeights, iconSizes, layout, spacing } from "../theme";
 
 export default function AccountantEmployeeDetailScreen() {
   const params = useLocalSearchParams();
@@ -18,7 +20,7 @@ export default function AccountantEmployeeDetailScreen() {
   if (!employee) {
     return (
       <View style={styles.container}>
-        <Text>Employee not found</Text>
+        <Text>{messages.employeeNotFound}</Text>
       </View>
     );
   }
@@ -59,8 +61,8 @@ export default function AccountantEmployeeDetailScreen() {
   };
 
   const handleViewPDF = async () => {
-    if (employee.pdfStatus === "missing") {
-      Alert.alert("No PDF", "This employee hasn't uploaded a timesheet for this month.");
+    if (employee.pdfStatus === pdfStatus.missing) {
+      Alert.alert(messages.noPdfAlertTitle, messages.noPdfAlertMessage);
       return;
     }
 
@@ -73,11 +75,11 @@ export default function AccountantEmployeeDetailScreen() {
       {/* Header Bar */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Feather name="arrow-left" size={24} color="#007AFF" />
+          <Feather name="arrow-left" size={iconSizes.lg} color={colors.primary} />
         </TouchableOpacity>
         <View style={styles.headerTitles}>
           <Text style={styles.title}>
-            <Text style={styles.boldName}>{employee.employeeName}</Text> - {format(currentMonth, "MMMM yyyy")}
+            <Text style={styles.boldName}>{employee.employeeName}</Text> - {format(currentMonth, dateFormats.monthYear)}
           </Text>
         </View>
         <View style={styles.placeholder} />
@@ -87,26 +89,26 @@ export default function AccountantEmployeeDetailScreen() {
 
       {/* Summary */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Summary</Text>
+        <Text style={styles.sectionTitle}>{labels.summary}</Text>
         <View style={styles.summaryGrid}>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryValue}>{employee.totalHours}h</Text>
-            <Text style={styles.summaryLabel}>Total Hours</Text>
+            <Text style={styles.summaryLabel}>{labels.totalHours}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryValue}>{employee.daysLogged}</Text>
-            <Text style={styles.summaryLabel}>Working Days</Text>
+            <Text style={styles.summaryLabel}>{labels.workingDays}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryValue}>{projects.length}</Text>
-            <Text style={styles.summaryLabel}>Projects</Text>
+            <Text style={styles.summaryLabel}>{labels.projects}</Text>
           </View>
         </View>
       </View>
 
       {/* Project Breakdown */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Project Breakdown</Text>
+        <Text style={styles.sectionTitle}>{labels.projectBreakdown}</Text>
         <View style={styles.card}>
           {projects.map((project) => (
             <View key={project.name} style={styles.projectItem}>
@@ -125,19 +127,19 @@ export default function AccountantEmployeeDetailScreen() {
 
       {/* PDF Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Timesheet PDF</Text>
+        <Text style={styles.sectionTitle}>{labels.timesheetPdf}</Text>
         <View style={styles.card}>
-          {employee.pdfStatus === "uploaded" ? (
+          {employee.pdfStatus === pdfStatus.uploaded ? (
             <>
               <View style={styles.pdfInfo}>
-                <Text style={styles.pdfFileName}>📄 {employee.pdfFileName}</Text>
-                <Text style={styles.pdfDate}>Uploaded: {employee.pdfUploadDate}</Text>
+                <Text style={styles.pdfFileName}>{symbols.pdfEmoji} {employee.pdfFileName}</Text>
+                <Text style={styles.pdfDate}>{labels.uploaded}: {employee.pdfUploadDate}</Text>
               </View>
-              <Button title="View PDF" onPress={handleViewPDF} />
+              <Button title={buttonLabels.viewPdf} onPress={handleViewPDF} />
             </>
           ) : (
             <View style={styles.noPdf}>
-              <Text style={styles.noPdfText}>⚠️ No timesheet uploaded</Text>
+              <Text style={styles.noPdfText}>{symbols.warningEmoji} {labels.noTimesheetUploaded}</Text>
             </View>
           )}
         </View>
@@ -145,7 +147,7 @@ export default function AccountantEmployeeDetailScreen() {
 
       {/* Daily Breakdown */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Daily Breakdown</Text>
+        <Text style={styles.sectionTitle}>{labels.dailyBreakdown}</Text>
         {sortedDates.map((date) => {
           const dayEntries = entriesByDate[date];
           const dayTotal = dayEntries.reduce((sum, e) => sum + e.hours, 0);
@@ -155,10 +157,10 @@ export default function AccountantEmployeeDetailScreen() {
             <View key={date} style={styles.dayCard}>
               <TouchableOpacity onPress={() => toggleDay(date)} style={styles.dayHeader}>
                 <View style={styles.dayInfo}>
-                  <Text style={styles.dayDate}>{format(new Date(date), "EEE, MMM d")}</Text>
+                  <Text style={styles.dayDate}>{format(new Date(date), dateFormats.dayMonth)}</Text>
                   <Text style={styles.dayTotal}>{dayTotal.toFixed(1)}h</Text>
                 </View>
-                <Text style={styles.expandIcon}>{isExpanded ? "▼" : "▶"}</Text>
+                <Text style={styles.expandIcon}>{isExpanded ? symbols.expandDown : symbols.expandRight}</Text>
               </TouchableOpacity>
 
               {isExpanded && (
@@ -186,119 +188,119 @@ export default function AccountantEmployeeDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: colors.backgroundWhite },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 60,
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    backgroundColor: "#fff",
+    paddingTop: layout.headerPaddingTop,
+    paddingHorizontal: layout.headerPaddingHorizontal,
+    paddingBottom: layout.headerPaddingBottom,
+    backgroundColor: colors.backgroundWhite,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: colors.borderLight,
   },
   backButton: {
-    padding: 8,
+    padding: spacing.sm,
   },
   headerTitles: {
     flex: 1,
     alignItems: "center",
   },
   placeholder: { width: 40 },
-  title: { fontSize: 16, fontWeight: "600", color: "#333" },
-  boldName: { fontWeight: "700" },
-  scrollContent: { padding: 16, paddingBottom: 40 },
+  title: { fontSize: fontSizes.lg, fontWeight: fontWeights.semibold, color: colors.textPrimary },
+  boldName: { fontWeight: fontWeights.bold },
+  scrollContent: { padding: layout.scrollContentPadding, paddingBottom: layout.scrollContentPaddingBottom },
   
-  section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: "600", marginBottom: 12 },
+  section: { marginBottom: spacing.xl },
+  sectionTitle: { fontSize: fontSizes.xl, fontWeight: fontWeights.semibold, marginBottom: spacing.md },
   
   summaryGrid: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colors.backgroundLight,
     borderRadius: 12,
-    padding: 16,
+    padding: spacing.lg,
     flexDirection: "row",
     justifyContent: "space-around",
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.borderLight,
   },
   summaryItem: { alignItems: "center" },
-  summaryValue: { fontSize: 24, fontWeight: "bold", color: "#333" },
-  summaryLabel: { fontSize: 12, color: "#666", marginTop: 4 },
+  summaryValue: { fontSize: iconSizes.lg, fontWeight: fontWeights.bold, color: colors.textPrimary },
+  summaryLabel: { fontSize: fontSizes.xs, color: colors.textSecondary, marginTop: 4 },
   
   card: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colors.backgroundLight,
     borderRadius: 12,
-    padding: 16,
+    padding: spacing.lg,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.borderLight,
   },
   projectItem: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   projectInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 6,
   },
-  projectName: { fontSize: 16, fontWeight: "600" },
-  projectHours: { fontSize: 16, color: "#666" },
+  projectName: { fontSize: fontSizes.lg, fontWeight: fontWeights.semibold },
+  projectHours: { fontSize: fontSizes.lg, color: colors.textSecondary },
   progressBarContainer: {
     height: 6,
-    backgroundColor: "#ddd",
+    backgroundColor: colors.borderDefault,
     borderRadius: 3,
     marginBottom: 4,
     overflow: "hidden",
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#007AFF",
+    backgroundColor: colors.primary,
     borderRadius: 3,
   },
-  projectPercentage: { fontSize: 13, color: "#666", textAlign: "right" },
+  projectPercentage: { fontSize: fontSizes.sm, color: colors.textSecondary, textAlign: "right" },
   
-  pdfInfo: { marginBottom: 12 },
-  pdfFileName: { fontSize: 15, fontWeight: "600", marginBottom: 4 },
-  pdfDate: { fontSize: 13, color: "#666" },
-  noPdf: { padding: 16, alignItems: "center" },
-  noPdfText: { fontSize: 15, color: "#FF9500", fontWeight: "500" },
+  pdfInfo: { marginBottom: spacing.md },
+  pdfFileName: { fontSize: fontSizes.base, fontWeight: fontWeights.semibold, marginBottom: 4 },
+  pdfDate: { fontSize: fontSizes.sm, color: colors.textSecondary },
+  noPdf: { padding: spacing.lg, alignItems: "center" },
+  noPdfText: { fontSize: fontSizes.base, color: colors.warning, fontWeight: fontWeights.medium },
   
   dayCard: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colors.backgroundLight,
     borderRadius: 12,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.borderLight,
     overflow: "hidden",
   },
   dayHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
+    padding: spacing.md,
   },
   dayInfo: { flex: 1 },
-  dayDate: { fontSize: 16, fontWeight: "500", marginBottom: 2 },
-  dayTotal: { fontSize: 14, color: "#666" },
-  expandIcon: { fontSize: 14, color: "#999", marginLeft: 12 },
+  dayDate: { fontSize: fontSizes.lg, fontWeight: fontWeights.medium, marginBottom: 2 },
+  dayTotal: { fontSize: fontSizes.md, color: colors.textSecondary },
+  expandIcon: { fontSize: fontSizes.md, color: colors.gray400, marginLeft: spacing.md },
   dayEntries: {
     borderTopWidth: 1,
-    borderTopColor: "#eee",
-    padding: 12,
-    paddingTop: 8,
+    borderTopColor: colors.borderLight,
+    padding: spacing.md,
+    paddingTop: spacing.sm,
     gap: 10,
   },
   entryItem: {
     paddingLeft: 10,
     borderLeftWidth: 2,
-    borderLeftColor: "#007AFF",
+    borderLeftColor: colors.primary,
   },
   entryHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 3,
   },
-  entryProject: { fontSize: 14, fontWeight: "600" },
-  entryHours: { fontSize: 14, color: "#666" },
-  entryDescription: { fontSize: 13, color: "#666" },
+  entryProject: { fontSize: fontSizes.md, fontWeight: fontWeights.semibold },
+  entryHours: { fontSize: fontSizes.md, color: colors.textSecondary },
+  entryDescription: { fontSize: fontSizes.sm, color: colors.textSecondary },
 });

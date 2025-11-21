@@ -1,8 +1,9 @@
-// app/(auth)/index.tsx
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import { buttonLabels, messages, placeholders, routes, screenTitles } from "../../src/constants/ui";
+import { colors, fontSizes, fontWeights, spacing } from "../theme";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     if (!email || !password) {
-      alert("Please enter email and password");
+      alert(messages.enterEmailPassword);
       return;
     }
     login(email, password);
@@ -25,13 +26,13 @@ export default function LoginScreen() {
         style={styles.container}
       >
         <View style={styles.inner}>
-          <Text style={styles.title}>Time Tracker</Text>
+          <Text style={styles.title}>{screenTitles.timeTracker}</Text>
 
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="e-mail"
-              placeholderTextColor="#282323ff"
+              placeholder={placeholders.email}
+              placeholderTextColor={colors.textPlaceholder}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -40,8 +41,8 @@ export default function LoginScreen() {
 
             <TextInput
               style={styles.input}
-              placeholder="password"
-              placeholderTextColor="#282323ff"
+              placeholder={placeholders.password}
+              placeholderTextColor={colors.textPlaceholder}
 
               value={password}
               onChangeText={setPassword}
@@ -50,14 +51,14 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.buttonContainer}>
-            <Button title="Login" onPress={handleLogin} />
+            <Button title={buttonLabels.login} onPress={handleLogin} />
           </View>
 
           <View style={styles.footer}>
-            <Text>Don&apos;t have an account?</Text>
+            <Text>{messages.dontHaveAccount}</Text>
             <Button
-              title="Create Account"
-              onPress={() => router.push("/auth/create-account" as any)}
+              title={buttonLabels.createAccount}
+              onPress={() => router.push(routes.authCreateAccount as any)}
             />
           </View>
         </View>
@@ -67,19 +68,19 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  inner: { flex: 1, padding: 24, justifyContent: "center" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 32, textAlign: "center", color: "#333" },
-  inputContainer: { gap: 16, marginBottom: 24 },
+  container: { flex: 1, backgroundColor: colors.backgroundWhite },
+  inner: { flex: 1, padding: spacing.xl, justifyContent: "center" },
+  title: { fontSize: fontSizes.title, fontWeight: fontWeights.bold, marginBottom: spacing.xxl, textAlign: "center", color: colors.textPrimary },
+  inputContainer: { gap: spacing.lg, marginBottom: spacing.xl },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.borderDefault,
     borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: "#f9f9f9",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: fontSizes.lg,
+    backgroundColor: colors.backgroundLight,
   },
-  buttonContainer: { gap: 12 },
-  footer: { marginTop: 32, alignItems: "center", gap: 8 },
+  buttonContainer: { gap: spacing.md },
+  footer: { marginTop: spacing.xxl, alignItems: "center", gap: spacing.sm },
 });

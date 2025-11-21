@@ -2,6 +2,8 @@ import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useEmployee } from "../../context/EmployeeContext";
+import { labels, routes } from "../../src/constants/ui";
+import { colors, fontSizes, fontWeights, iconSizes, layout, spacing } from "../theme";
 
 export default function DayDetailsScreen() {
   const { date } = useLocalSearchParams();
@@ -16,21 +18,21 @@ export default function DayDetailsScreen() {
       {/* Header Bar */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Feather name="arrow-left" size={24} color="#007AFF" />
+          <Feather name="arrow-left" size={iconSizes.lg} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.title}>{dateStr}</Text>
         <TouchableOpacity 
-          onPress={() => router.push({ pathname: "/employee/daily-entry", params: { date: dateStr } } as any)}
+          onPress={() => router.push({ pathname: routes.employeeDailyEntry, params: { date: dateStr } } as any)}
           style={styles.addButton}
         >
-          <Feather name="plus" size={24} color="#007AFF" />
+          <Feather name="plus" size={iconSizes.lg} color={colors.primary} />
         </TouchableOpacity>
       </View>
       
       <View style={styles.content}>
       {entries.length === 0 ? (
         <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No entries for this day.</Text>
+            <Text style={styles.emptyText}>{labels.noEntriesDay}</Text>
         </View>
       ) : (
         <FlatList
@@ -54,39 +56,39 @@ export default function DayDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: colors.backgroundWhite },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 60,
-    paddingHorizontal: 16,
-    paddingBottom: 13,
-    backgroundColor: "#fff",
+    paddingTop: layout.headerPaddingTop,
+    paddingHorizontal: layout.headerPaddingHorizontal,
+    paddingBottom: layout.headerPaddingBottomLarge,
+    backgroundColor: colors.backgroundWhite,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: colors.borderLight,
   },
   backButton: {
-    padding: 8,
+    padding: spacing.sm,
   },
   addButton: {
-    padding: 8,
+    padding: spacing.sm,
   },
-  title: { fontSize: 18, fontWeight: "600", color: "#333", flex: 1, textAlign: "center" },
-  content: { flex: 1, padding: 16 },
-  listContent: { gap: 12, paddingBottom: 20 },
+  title: { fontSize: fontSizes.xl, fontWeight: fontWeights.semibold, color: colors.textPrimary, flex: 1, textAlign: "center" },
+  content: { flex: 1, padding: layout.containerPadding },
+  listContent: { gap: spacing.md, paddingBottom: 20 },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyText: { color: "#666", fontStyle: "italic", fontSize: 16 },
+  emptyText: { color: colors.textSecondary, fontStyle: "italic", fontSize: fontSizes.lg },
   entryCard: {
-    backgroundColor: "#f9f9f9",
-    padding: 16,
+    backgroundColor: colors.backgroundLight,
+    padding: spacing.lg,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.borderLight,
   },
-  entryHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-  project: { fontWeight: "600", fontSize: 16, color: "#333" },
-  hours: { fontWeight: "bold", fontSize: 16, color: "#007AFF" },
-  description: { color: "#555", fontSize: 14 },
-  buttonContainer: { gap: 12, marginTop: 10 },
+  entryHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: spacing.sm },
+  project: { fontWeight: fontWeights.semibold, fontSize: fontSizes.lg, color: colors.textPrimary },
+  hours: { fontWeight: fontWeights.bold, fontSize: fontSizes.lg, color: colors.primary },
+  description: { color: colors.gray600, fontSize: fontSizes.md },
+  buttonContainer: { gap: spacing.md, marginTop: 10 },
 });
