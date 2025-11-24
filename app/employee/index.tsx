@@ -102,6 +102,18 @@ export default function EmployeeHomeScreen() {
           </View>
         </View>
 
+        {/* My Projects Button */}
+        <TouchableOpacity
+          style={styles.myProjectsButton}
+          onPress={() => router.push(routes.employeeMyProjects as any)}
+        >
+          <View style={styles.projectsButtonContent}>
+            <Feather name="briefcase" size={iconSizes.md} color={colors.success} />
+            <Text style={styles.myProjectsButtonText}>My Projects</Text>
+          </View>
+          <Feather name="chevron-right" size={iconSizes.md} color={colors.textSecondary} />
+        </TouchableOpacity>
+
         {/* PDF Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{labels.monthlyReportPdf}</Text>
@@ -190,6 +202,44 @@ const styles = StyleSheet.create({
   },
   summaryValue: { fontSize: fontSizes.xxl, fontWeight: fontWeights.bold, color: colors.textPrimary },
   summaryLabel: { fontSize: fontSizes.xs, color: colors.textSecondary, marginTop: 4 },
+
+  projectsButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.backgroundLight,
+    borderWidth: 1,
+    borderColor: colors.borderDefault,
+    borderRadius: 12,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  myProjectsButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.successLight,
+    borderWidth: 1,
+    borderColor: colors.success + '30',
+    borderRadius: 12,
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  projectsButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  projectsButtonText: {
+    fontSize: fontSizes.lg,
+    fontWeight: fontWeights.semibold,
+    color: colors.textPrimary,
+  },
+  myProjectsButtonText: {
+    fontSize: fontSizes.lg,
+    fontWeight: fontWeights.semibold,
+    color: colors.success,
+  },
 
   section: { marginBottom: spacing.xl },
   sectionTitle: { fontSize: fontSizes.xl, fontWeight: fontWeights.semibold, marginBottom: spacing.md },
