@@ -1,26 +1,39 @@
 import { Feather } from '@expo/vector-icons';
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Sidebar, { accountantMenuItems } from "../../components/Sidebar";
 import { useAccountant } from "../../context/AccountantContext";
-import { useAuth } from "../../context/AuthContext";
 import { dateFormats, labels, routes, screenTitles, symbols } from "../../src/constants/ui";
 
 export default function AccountantDashboardScreen() {
-  const { logout } = useAuth();
   const { currentMonth, nextMonth, previousMonth, getMonthData } = useAccountant();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const monthData = getMonthData();
 
   return (
     <View className="flex-1 bg-white">
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        activeRoute="dashboard"
+        menuItems={accountantMenuItems}
+        userName="Sarah Johnson"
+        userRole="Accountant"
+        avatarColor="bg-emerald-500"
+      />
+
       {/* Title Bar */}
       <View className="flex-row justify-between items-center pt-[60px] px-lg pb-[12px] bg-white border-b border-gray-100">
-        <Text className="text-2xl font-bold text-gray-700">{screenTitles.accountantPage}</Text>
-        <TouchableOpacity onPress={logout} className="px-md py-[6px]">
-          <Feather name="log-out" size={24} color="#FF3B30" />
+        <TouchableOpacity onPress={() => setSidebarOpen(true)} className="p-2 -ml-2">
+          <Feather name="menu" size={24} color="#1F2937" />
         </TouchableOpacity>
+        <Text className="text-lg font-bold text-gray-700">{screenTitles.accountantPage}</Text>
+        <View className="w-10" />
       </View>
 
       {/* Month Selector */}

@@ -1,6 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import Sidebar, { employeeMenuItems } from "../../components/Sidebar";
 import { useEmployee } from "../../context/EmployeeContext";
 import { routes } from "../../src/constants/ui";
 
@@ -27,7 +29,8 @@ const getMyProjects = (employeeId: string): Project[] => {
 
 export default function EmployeeMyProjectsScreen() {
   const router = useRouter();
-  const { currentEmployeeId } = useEmployee();
+  const { currentEmployeeId, currentEmployeeName } = useEmployee();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const myProjects = getMyProjects(currentEmployeeId);
 
@@ -40,13 +43,24 @@ export default function EmployeeMyProjectsScreen() {
 
   return (
     <View className="flex-1 bg-white">
+      {/* Sidebar */}
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        activeRoute="projects"
+        menuItems={employeeMenuItems}
+        userName={currentEmployeeName || "Employee"}
+        userRole="Employee"
+        avatarColor="bg-violet-500"
+      />
+
       {/* Header */}
       <View className="flex-row justify-between items-center pt-[50px] px-lg pb-[12px] bg-white border-b border-gray-100">
-        <TouchableOpacity onPress={() => router.back()} className="py-xs pr-md">
-          <Feather name="arrow-left" size={24} color="#007AFF" />
+        <TouchableOpacity onPress={() => setSidebarOpen(true)} className="p-2 -ml-2">
+          <Feather name="menu" size={24} color="#1F2937" />
         </TouchableOpacity>
-        <Text className="text-2xl font-bold text-gray-700">My Projects</Text>
-        <View className="w-[36px]" />
+        <Text className="text-lg font-bold text-gray-700">My Projects</Text>
+        <View className="w-10" />
       </View>
 
       {/* Project Count Badge */}
