@@ -1,9 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { useEmployee } from "../../context/EmployeeContext";
 import { routes } from "../../src/constants/ui";
-import { colors, fontSizes, fontWeights, iconSizes, layout, spacing } from "../theme";
 
 // Project type definition
 interface Project {
@@ -40,21 +39,21 @@ export default function EmployeeMyProjectsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Feather name="arrow-left" size={iconSizes.lg} color={colors.primary} />
+      <View className="flex-row justify-between items-center pt-[50px] px-lg pb-[12px] bg-white border-b border-gray-100">
+        <TouchableOpacity onPress={() => router.back()} className="py-xs pr-md">
+          <Feather name="arrow-left" size={24} color="#007AFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Projects</Text>
-        <View style={styles.placeholder} />
+        <Text className="text-2xl font-bold text-gray-700">My Projects</Text>
+        <View className="w-[36px]" />
       </View>
 
       {/* Project Count Badge */}
-      <View style={styles.countContainer}>
-        <View style={styles.countBadge}>
-          <Feather name="briefcase" size={iconSizes.md} color={colors.primary} />
-          <Text style={styles.countText}>
+      <View className="px-lg py-md bg-gray-50 border-b border-gray-100">
+        <View className="flex-row items-center gap-sm self-start bg-white px-md py-sm rounded-2xl border border-gray-200">
+          <Feather name="briefcase" size={20} color="#007AFF" />
+          <Text className="text-base font-semibold text-gray-700">
             {myProjects.length} {myProjects.length === 1 ? 'Project' : 'Projects'}
           </Text>
         </View>
@@ -62,10 +61,10 @@ export default function EmployeeMyProjectsScreen() {
 
       {/* Projects List */}
       {myProjects.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Feather name="folder" size={iconSizes.xxxl} color={colors.gray300} />
-          <Text style={styles.emptyTitle}>No Projects Assigned</Text>
-          <Text style={styles.emptyDescription}>
+        <View className="flex-1 justify-center items-center px-xl">
+          <Feather name="folder" size={40} color="#CCCCCC" />
+          <Text className="text-xl font-semibold text-gray-700 mt-lg mb-sm">No Projects Assigned</Text>
+          <Text className="text-base text-gray-500 text-center leading-6">
             You don't have any projects assigned yet.
           </Text>
         </View>
@@ -73,30 +72,30 @@ export default function EmployeeMyProjectsScreen() {
         <FlatList
           data={myProjects}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.projectCard}
+              className="bg-white border border-gray-200 rounded-xl p-lg mb-md"
               onPress={() => handleProjectPress(item.id)}
               activeOpacity={0.7}
             >
-              <View style={styles.projectHeader}>
-                <View style={styles.projectIconContainer}>
-                  <Feather name="folder" size={iconSizes.lg} color={colors.primary} />
+              <View className="flex-row items-start mb-md">
+                <View className="w-12 h-12 rounded-xl bg-primary-light justify-center items-center mr-md">
+                  <Feather name="folder" size={24} color="#007AFF" />
                 </View>
-                <View style={styles.projectInfo}>
-                  <Text style={styles.projectName}>{item.name}</Text>
-                  <Text style={styles.projectDescription} numberOfLines={2}>
+                <View className="flex-1 mr-sm">
+                  <Text className="text-xl font-semibold text-gray-700 mb-xs">{item.name}</Text>
+                  <Text className="text-sm text-gray-500 leading-5" numberOfLines={2}>
                     {item.description}
                   </Text>
                 </View>
-                <Feather name="chevron-right" size={iconSizes.md} color={colors.textSecondary} />
+                <Feather name="chevron-right" size={20} color="#666666" />
               </View>
 
-              <View style={styles.projectFooter}>
-                <View style={styles.memberCount}>
-                  <Feather name="users" size={iconSizes.sm} color={colors.textSecondary} />
-                  <Text style={styles.memberText}>
+              <View className="border-t border-gray-100 pt-md flex-row justify-between items-center">
+                <View className="flex-row items-center gap-xs">
+                  <Feather name="users" size={16} color="#666666" />
+                  <Text className="text-sm text-gray-500">
                     {item.assignedMembers.length} {item.assignedMembers.length === 1 ? 'member' : 'members'}
                   </Text>
                 </View>
@@ -108,134 +107,3 @@ export default function EmployeeMyProjectsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.backgroundWhite,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: layout.headerPaddingTopSmall,
-    paddingHorizontal: layout.headerPaddingHorizontal,
-    paddingBottom: layout.headerPaddingBottom,
-    backgroundColor: colors.backgroundWhite,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  backButton: {
-    paddingVertical: spacing.xs,
-    paddingRight: spacing.md,
-  },
-  headerTitle: {
-    fontSize: fontSizes.xxl,
-    fontWeight: fontWeights.bold,
-    color: colors.textPrimary,
-  },
-  placeholder: {
-    width: iconSizes.lg + spacing.md,
-  },
-  countContainer: {
-    paddingHorizontal: layout.containerPadding,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.backgroundLight,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  countBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    alignSelf: "flex-start",
-    backgroundColor: colors.backgroundWhite,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
-  },
-  countText: {
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.semibold,
-    color: colors.textPrimary,
-  },
-  listContent: {
-    padding: layout.containerPadding,
-    paddingBottom: layout.scrollContentPaddingBottom,
-  },
-  projectCard: {
-    backgroundColor: colors.backgroundWhite,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
-    borderRadius: 12,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  projectHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: spacing.md,
-  },
-  projectIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: colors.primaryLight,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: spacing.md,
-  },
-  projectInfo: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  projectName: {
-    fontSize: fontSizes.xl,
-    fontWeight: fontWeights.semibold,
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  projectDescription: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
-    lineHeight: fontSizes.sm * 1.5,
-  },
-  projectFooter: {
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
-    paddingTop: spacing.md,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  memberCount: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  memberText: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: spacing.xl,
-  },
-  emptyTitle: {
-    fontSize: fontSizes.xl,
-    fontWeight: fontWeights.semibold,
-    color: colors.textPrimary,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  emptyDescription: {
-    fontSize: fontSizes.md,
-    color: colors.textSecondary,
-    textAlign: "center",
-    lineHeight: fontSizes.md * 1.5,
-  },
-});

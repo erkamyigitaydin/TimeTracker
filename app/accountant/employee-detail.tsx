@@ -2,10 +2,9 @@ import { Feather } from '@expo/vector-icons';
 import { format } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Button, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useAccountant } from "../../context/AccountantContext";
 import { buttonLabels, dateFormats, labels, messages, pdfStatus, symbols } from "../../src/constants/ui";
-import { colors, fontSizes, fontWeights, iconSizes, layout, spacing } from "../theme";
 
 export default function AccountantEmployeeDetailScreen() {
   const params = useLocalSearchParams();
@@ -19,7 +18,7 @@ export default function AccountantEmployeeDetailScreen() {
 
   if (!employee) {
     return (
-      <View style={styles.container}>
+      <View className="flex-1 bg-white">
         <Text>{messages.employeeNotFound}</Text>
       </View>
     );
@@ -71,108 +70,110 @@ export default function AccountantEmployeeDetailScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white">
       {/* Header Bar */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Feather name="arrow-left" size={iconSizes.lg} color={colors.primary} />
+      <View className="flex-row justify-between items-center pt-[50px] px-lg pb-[12px] bg-white border-b border-gray-100">
+        <TouchableOpacity onPress={() => router.back()} className="p-sm">
+          <Feather name="arrow-left" size={24} color="#007AFF" />
         </TouchableOpacity>
-        <View style={styles.headerTitles}>
-          <Text style={styles.title}>
-            <Text style={styles.boldName}>{employee.employeeName}</Text> - {format(currentMonth, dateFormats.monthYear)}
+        <View className="flex-1 items-center">
+          <Text className="text-lg font-semibold text-gray-700">
+            <Text className="font-bold">{employee.employeeName}</Text> - {format(currentMonth, dateFormats.monthYear)}
           </Text>
         </View>
-        <View style={styles.placeholder} />
+        <View className="w-10" />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
 
       {/* Summary */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{labels.summary}</Text>
-        <View style={styles.summaryGrid}>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryValue}>{employee.totalHours}h</Text>
-            <Text style={styles.summaryLabel}>{labels.totalHours}</Text>
+      <View className="mb-xl">
+        <Text className="text-xl font-semibold mb-md">{labels.summary}</Text>
+        <View className="bg-white border border-gray-200 rounded-xl p-lg flex-row justify-around">
+          <View className="items-center">
+            <Text className="text-[28px] font-bold text-gray-700">{employee.totalHours}h</Text>
+            <Text className="text-xs text-gray-500 mt-1">{labels.totalHours}</Text>
           </View>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryValue}>{employee.daysLogged}</Text>
-            <Text style={styles.summaryLabel}>{labels.workingDays}</Text>
+          <View className="items-center">
+            <Text className="text-[28px] font-bold text-gray-700">{employee.daysLogged}</Text>
+            <Text className="text-xs text-gray-500 mt-1">{labels.workingDays}</Text>
           </View>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryValue}>{projects.length}</Text>
-            <Text style={styles.summaryLabel}>{labels.projects}</Text>
+          <View className="items-center">
+            <Text className="text-[28px] font-bold text-gray-700">{projects.length}</Text>
+            <Text className="text-xs text-gray-500 mt-1">{labels.projects}</Text>
           </View>
         </View>
       </View>
 
       {/* Project Breakdown */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{labels.projectBreakdown}</Text>
-        <View style={styles.card}>
-          {projects.map((project) => (
-            <View key={project.name} style={styles.projectItem}>
-              <View style={styles.projectInfo}>
-                <Text style={styles.projectName}>{project.name}</Text>
-                <Text style={styles.projectHours}>{project.hours}h</Text>
+      <View className="mb-xl">
+        <Text className="text-xl font-semibold mb-md">{labels.projectBreakdown}</Text>
+        <View className="bg-white border border-gray-200 rounded-xl p-lg">
+          {projects.map((project, index) => (
+            <View key={project.name} className={index < projects.length - 1 ? "mb-lg" : ""}>
+              <View className="flex-row justify-between mb-1.5">
+                <Text className="text-lg font-semibold text-gray-700">{project.name}</Text>
+                <Text className="text-lg text-gray-500">{project.hours}h</Text>
               </View>
-              <View style={styles.progressBarContainer}>
-                <View style={[styles.progressBar, { width: `${project.percentage}%` }]} />
+              <View className="h-1.5 bg-gray-200 rounded-[3px] mb-1 overflow-hidden">
+                <View style={{ width: `${project.percentage}%` }} className="h-full bg-primary rounded-[3px]" />
               </View>
-              <Text style={styles.projectPercentage}>{project.percentage}%</Text>
+              <Text className="text-sm text-gray-500 text-right">{project.percentage}%</Text>
             </View>
           ))}
         </View>
       </View>
 
       {/* PDF Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{labels.timesheetPdf}</Text>
-        <View style={styles.card}>
+      <View className="mb-xl">
+        <Text className="text-xl font-semibold mb-md">{labels.timesheetPdf}</Text>
+        <View className="bg-white border border-gray-200 rounded-xl p-lg">
           {employee.pdfStatus === pdfStatus.uploaded ? (
             <>
-              <View style={styles.pdfInfo}>
-                <Text style={styles.pdfFileName}>{symbols.pdfEmoji} {employee.pdfFileName}</Text>
-                <Text style={styles.pdfDate}>{labels.uploaded}: {employee.pdfUploadDate}</Text>
+              <View className="mb-md">
+                <Text className="text-base font-semibold mb-1">{symbols.pdfEmoji} {employee.pdfFileName}</Text>
+                <Text className="text-sm text-gray-500">{labels.uploaded}: {employee.pdfUploadDate}</Text>
               </View>
-              <Button title={buttonLabels.viewPdf} onPress={handleViewPDF} />
+              <TouchableOpacity onPress={handleViewPDF} className="bg-primary py-md rounded-lg items-center">
+                <Text className="text-white font-semibold">{buttonLabels.viewPdf}</Text>
+              </TouchableOpacity>
             </>
           ) : (
-            <View style={styles.noPdf}>
-              <Text style={styles.noPdfText}>{symbols.warningEmoji} {labels.noTimesheetUploaded}</Text>
+            <View className="p-lg items-center">
+              <Text className="text-base text-warning font-medium">{symbols.warningEmoji} {labels.noTimesheetUploaded}</Text>
             </View>
           )}
         </View>
       </View>
 
       {/* Daily Breakdown */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{labels.dailyBreakdown}</Text>
+      <View className="mb-xl">
+        <Text className="text-xl font-semibold mb-md">{labels.dailyBreakdown}</Text>
         {sortedDates.map((date) => {
           const dayEntries = entriesByDate[date];
           const dayTotal = dayEntries.reduce((sum, e) => sum + e.hours, 0);
           const isExpanded = expandedDays.has(date);
 
           return (
-            <View key={date} style={styles.dayCard}>
-              <TouchableOpacity onPress={() => toggleDay(date)} style={styles.dayHeader}>
-                <View style={styles.dayInfo}>
-                  <Text style={styles.dayDate}>{format(new Date(date), dateFormats.dayMonth)}</Text>
-                  <Text style={styles.dayTotal}>{dayTotal.toFixed(1)}h</Text>
+            <View key={date} className="bg-white border border-gray-200 rounded-xl mb-sm overflow-hidden">
+              <TouchableOpacity onPress={() => toggleDay(date)} className="flex-row justify-between items-center p-md">
+                <View className="flex-1">
+                  <Text className="text-lg font-medium mb-0.5 text-gray-700">{format(new Date(date), dateFormats.dayMonth)}</Text>
+                  <Text className="text-md text-gray-500">{dayTotal.toFixed(1)}h</Text>
                 </View>
-                <Text style={styles.expandIcon}>{isExpanded ? symbols.expandDown : symbols.expandRight}</Text>
+                <Text className="text-md text-gray-400 ml-md">{isExpanded ? symbols.expandDown : symbols.expandRight}</Text>
               </TouchableOpacity>
 
               {isExpanded && (
-                <View style={styles.dayEntries}>
+                <View className="border-t border-gray-100 p-md pt-sm gap-[10px]">
                   {dayEntries.map((entry) => (
-                    <View key={entry.id} style={styles.entryItem}>
-                      <View style={styles.entryHeader}>
-                        <Text style={styles.entryProject}>{entry.projectId}</Text>
-                        <Text style={styles.entryHours}>{entry.hours}h</Text>
+                    <View key={entry.id} className="pl-[10px] border-l-2 border-primary">
+                      <View className="flex-row justify-between mb-[3px]">
+                        <Text className="text-md font-semibold text-gray-700">{entry.projectId}</Text>
+                        <Text className="text-md text-gray-500">{entry.hours}h</Text>
                       </View>
                       {entry.description && (
-                        <Text style={styles.entryDescription}>{entry.description}</Text>
+                        <Text className="text-sm text-gray-500">{entry.description}</Text>
                       )}
                     </View>
                   ))}
@@ -186,121 +187,3 @@ export default function AccountantEmployeeDetailScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundWhite },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: layout.headerPaddingTop,
-    paddingHorizontal: layout.headerPaddingHorizontal,
-    paddingBottom: layout.headerPaddingBottom,
-    backgroundColor: colors.backgroundWhite,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  headerTitles: {
-    flex: 1,
-    alignItems: "center",
-  },
-  placeholder: { width: 40 },
-  title: { fontSize: fontSizes.lg, fontWeight: fontWeights.semibold, color: colors.textPrimary },
-  boldName: { fontWeight: fontWeights.bold },
-  scrollContent: { padding: layout.scrollContentPadding, paddingBottom: layout.scrollContentPaddingBottom },
-  
-  section: { marginBottom: spacing.xl },
-  sectionTitle: { fontSize: fontSizes.xl, fontWeight: fontWeights.semibold, marginBottom: spacing.md },
-  
-  summaryGrid: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: 12,
-    padding: spacing.lg,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  summaryItem: { alignItems: "center" },
-  summaryValue: { fontSize: iconSizes.lg, fontWeight: fontWeights.bold, color: colors.textPrimary },
-  summaryLabel: { fontSize: fontSizes.xs, color: colors.textSecondary, marginTop: 4 },
-  
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: 12,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  projectItem: {
-    marginBottom: spacing.lg,
-  },
-  projectInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
-  projectName: { fontSize: fontSizes.lg, fontWeight: fontWeights.semibold },
-  projectHours: { fontSize: fontSizes.lg, color: colors.textSecondary },
-  progressBarContainer: {
-    height: 6,
-    backgroundColor: colors.borderDefault,
-    borderRadius: 3,
-    marginBottom: 4,
-    overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%",
-    backgroundColor: colors.primary,
-    borderRadius: 3,
-  },
-  projectPercentage: { fontSize: fontSizes.sm, color: colors.textSecondary, textAlign: "right" },
-  
-  pdfInfo: { marginBottom: spacing.md },
-  pdfFileName: { fontSize: fontSizes.base, fontWeight: fontWeights.semibold, marginBottom: 4 },
-  pdfDate: { fontSize: fontSizes.sm, color: colors.textSecondary },
-  noPdf: { padding: spacing.lg, alignItems: "center" },
-  noPdfText: { fontSize: fontSizes.base, color: colors.warning, fontWeight: fontWeights.medium },
-  
-  dayCard: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: 12,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    overflow: "hidden",
-  },
-  dayHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: spacing.md,
-  },
-  dayInfo: { flex: 1 },
-  dayDate: { fontSize: fontSizes.lg, fontWeight: fontWeights.medium, marginBottom: 2 },
-  dayTotal: { fontSize: fontSizes.md, color: colors.textSecondary },
-  expandIcon: { fontSize: fontSizes.md, color: colors.gray400, marginLeft: spacing.md },
-  dayEntries: {
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
-    padding: spacing.md,
-    paddingTop: spacing.sm,
-    gap: 10,
-  },
-  entryItem: {
-    paddingLeft: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: colors.primary,
-  },
-  entryHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 3,
-  },
-  entryProject: { fontSize: fontSizes.md, fontWeight: fontWeights.semibold },
-  entryHours: { fontSize: fontSizes.md, color: colors.textSecondary },
-  entryDescription: { fontSize: fontSizes.sm, color: colors.textSecondary },
-});

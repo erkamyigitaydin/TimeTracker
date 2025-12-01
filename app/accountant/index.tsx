@@ -1,11 +1,10 @@
 import { Feather } from '@expo/vector-icons';
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useAccountant } from "../../context/AccountantContext";
 import { useAuth } from "../../context/AuthContext";
 import { dateFormats, labels, routes, screenTitles, symbols } from "../../src/constants/ui";
-import { colors, fontSizes, fontWeights, iconSizes, layout, spacing } from "../theme";
 
 export default function AccountantDashboardScreen() {
   const { logout } = useAuth();
@@ -15,60 +14,60 @@ export default function AccountantDashboardScreen() {
   const monthData = getMonthData();
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white">
       {/* Title Bar */}
-      <View style={styles.titleBar}>
-        <Text style={styles.pageTitle}>{screenTitles.accountantPage}</Text>
-        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
-          <Feather name="log-out" size={iconSizes.lg} color={colors.danger} />
+      <View className="flex-row justify-between items-center pt-[60px] px-lg pb-[12px] bg-white border-b border-gray-100">
+        <Text className="text-2xl font-bold text-gray-700">{screenTitles.accountantPage}</Text>
+        <TouchableOpacity onPress={logout} className="px-md py-[6px]">
+          <Feather name="log-out" size={24} color="#FF3B30" />
         </TouchableOpacity>
       </View>
 
       {/* Month Selector */}
-      <View style={styles.header}>
+      <View className="flex-row justify-between items-center p-[10px] border-b border-gray-100 bg-white">
         <TouchableOpacity onPress={previousMonth}>
-          <Text style={styles.navText}>{symbols.chevronLeft}</Text>
+          <Text className="text-2xl font-bold p-sm text-primary">{symbols.chevronLeft}</Text>
         </TouchableOpacity>
-        <Text style={styles.monthTitle}>{format(currentMonth, dateFormats.monthYear)}</Text>
+        <Text className="text-xl font-semibold">{format(currentMonth, dateFormats.monthYear)}</Text>
         <TouchableOpacity onPress={nextMonth}>
-          <Text style={styles.navText}>{symbols.chevronRight}</Text>
+          <Text className="text-2xl font-bold p-sm text-primary">{symbols.chevronRight}</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
 
         {/* Summary Cards */}
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{monthData.totalEmployees}</Text>
-            <Text style={styles.summaryLabel}>{labels.employees}</Text>
+        <View className="flex-row gap-md mb-xl">
+          <View className="flex-1 bg-gray-50 p-lg rounded-xl items-center border border-gray-100">
+            <Text className="text-2xl font-bold text-gray-700">{monthData.totalEmployees}</Text>
+            <Text className="text-xs text-gray-500 mt-1">{labels.employees}</Text>
           </View>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{monthData.totalHours}h</Text>
-            <Text style={styles.summaryLabel}>{labels.totalHours}</Text>
+          <View className="flex-1 bg-gray-50 p-lg rounded-xl items-center border border-gray-100">
+            <Text className="text-2xl font-bold text-gray-700">{monthData.totalHours}h</Text>
+            <Text className="text-xs text-gray-500 mt-1">{labels.totalHours}</Text>
           </View>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{monthData.missingSubmissions}</Text>
-            <Text style={styles.summaryLabel}>{labels.missingPdfs}</Text>
+          <View className="flex-1 bg-gray-50 p-lg rounded-xl items-center border border-gray-100">
+            <Text className="text-2xl font-bold text-gray-700">{monthData.missingSubmissions}</Text>
+            <Text className="text-xs text-gray-500 mt-1">{labels.missingPdfs}</Text>
           </View>
         </View>
 
         {/* Employee List */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{labels.employees}</Text>
+        <View className="mb-xl">
+          <Text className="text-xl font-semibold mb-md">{labels.employees}</Text>
           {monthData.employees.map((emp) => (
             <TouchableOpacity
               key={emp.employeeId}
-              style={styles.employeeRow}
+              className="flex-row justify-between items-center py-md border-b border-gray-100"
               onPress={() => router.push(`${routes.accountantEmployeeDetail}?id=${emp.employeeId}` as any)}
             >
               <View>
-                <Text style={styles.employeeName}>{emp.employeeName}</Text>
-                <Text style={styles.employeeStats}>
+                <Text className="text-lg font-medium">{emp.employeeName}</Text>
+                <Text className="text-base text-gray-500">
                   {emp.totalHours}h • {emp.daysLogged} days • {emp.pdfStatus === "uploaded" ? "✓ PDF" : "⚠ No PDF"}
                 </Text>
               </View>
-              <Text style={styles.chevron}>{symbols.chevronForward}</Text>
+              <Text className="text-xl text-gray-300 font-bold">{symbols.chevronForward}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -76,64 +75,3 @@ export default function AccountantDashboardScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundWhite },
-  titleBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: layout.headerPaddingTop,
-    paddingHorizontal: layout.headerPaddingHorizontal,
-    paddingBottom: layout.headerPaddingBottom,
-    backgroundColor: colors.backgroundWhite,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  pageTitle: { fontSize: fontSizes.xxl, fontWeight: fontWeights.bold, color: colors.textPrimary },
-  logoutButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-  },
-  logoutIcon: { fontSize: iconSizes.lg, color: colors.danger, fontWeight: fontWeights.semibold },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-    backgroundColor: colors.backgroundWhite,
-  },
-  navText: { fontSize: iconSizes.lg, fontWeight: fontWeights.bold, padding: spacing.sm, color: colors.primary },
-  monthTitle: { fontSize: fontSizes.xl, fontWeight: fontWeights.semibold },
-  scrollContent: { padding: layout.scrollContentPadding, paddingBottom: layout.scrollContentPaddingBottom },
-  
-  summaryContainer: { flexDirection: "row", gap: spacing.md, marginBottom: spacing.xl },
-  summaryCard: {
-    flex: 1,
-    backgroundColor: colors.backgroundLight,
-    padding: spacing.lg,
-    borderRadius: 12,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  summaryValue: { fontSize: fontSizes.xxl, fontWeight: fontWeights.bold, color: colors.textPrimary },
-  summaryLabel: { fontSize: fontSizes.xs, color: colors.textSecondary, marginTop: 4 },
-
-  section: { marginBottom: spacing.xl },
-  sectionTitle: { fontSize: fontSizes.xl, fontWeight: fontWeights.semibold, marginBottom: spacing.md },
-  
-  employeeRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  employeeName: { fontSize: fontSizes.lg, fontWeight: fontWeights.medium },
-  employeeStats: { fontSize: fontSizes.md, color: colors.textSecondary },
-  chevron: { fontSize: fontSizes.xl, color: colors.gray300, fontWeight: fontWeights.bold },
-});

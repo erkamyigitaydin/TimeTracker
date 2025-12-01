@@ -1,10 +1,9 @@
 // app/(auth)/create-account.tsx
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Button, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Button, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { buttonLabels, labels, messages, placeholders, roles, screenTitles, type Role } from "../../src/constants/ui";
-import { colors, fontSizes, fontWeights, spacing } from "../theme";
 
 export default function CreateAccountScreen() {
   const [email, setEmail] = useState("");
@@ -26,14 +25,14 @@ export default function CreateAccountScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        className="flex-1 bg-white"
       >
-        <View style={styles.inner}>
-          <Text style={styles.title}>{screenTitles.createAccount}</Text>
+        <View className="flex-1 px-xl justify-center">
+          <Text className="text-4xl font-bold mb-2xl text-center text-gray-700">{screenTitles.createAccount}</Text>
 
-          <View style={styles.inputContainer}>
+          <View className="gap-lg mb-xl">
             <TextInput
-              style={styles.input}
+              className="border border-gray-200 rounded-md px-lg py-md text-lg bg-gray-50"
               placeholder={placeholders.email}
               value={email}
               onChangeText={setEmail}
@@ -42,7 +41,7 @@ export default function CreateAccountScreen() {
             />
 
             <TextInput
-              style={styles.input}
+              className="border border-gray-200 rounded-md px-lg py-md text-lg bg-gray-50"
               placeholder={placeholders.password}
               value={password}
               onChangeText={setPassword}
@@ -50,75 +49,45 @@ export default function CreateAccountScreen() {
             />
           </View>
 
-          <Text style={styles.label}>{labels.selectRole}</Text>
-          <View style={styles.roleContainer}>
+          <Text className="text-lg font-semibold mb-md text-gray-700">{labels.selectRole}</Text>
+          <View className="flex-row gap-md mb-2xl">
             <TouchableOpacity
-              style={[
-                styles.roleButton,
-                role === roles.employee && styles.roleButtonActive,
-              ]}
+              className={`flex-1 border rounded-md p-lg items-center ${
+                role === roles.employee 
+                  ? "border-primary bg-primary-light" 
+                  : "border-gray-200 bg-gray-50"
+              }`}
               onPress={() => setRoleState(roles.employee)}
             >
-              <Text style={[styles.roleText, role === roles.employee && styles.roleTextActive]}>Employee</Text>
+              <Text className={`text-lg ${
+                role === roles.employee 
+                  ? "text-primary font-semibold" 
+                  : "text-gray-500"
+              }`}>Employee</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.roleButton,
-                role === roles.accountant && styles.roleButtonActive,
-              ]}
+              className={`flex-1 border rounded-md p-lg items-center ${
+                role === roles.accountant 
+                  ? "border-primary bg-primary-light" 
+                  : "border-gray-200 bg-gray-50"
+              }`}
               onPress={() => setRoleState(roles.accountant)}
             >
-              <Text style={[styles.roleText, role === roles.accountant && styles.roleTextActive]}>Accountant</Text>
+              <Text className={`text-lg ${
+                role === roles.accountant 
+                  ? "text-primary font-semibold" 
+                  : "text-gray-500"
+              }`}>Accountant</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.buttonContainer}>
+          <View className="gap-md">
             <Button title={buttonLabels.createAccount} onPress={handleCreate} />
-            <Button title={buttonLabels.backToLogin} onPress={() => router.back()} color={colors.textSecondary} />
+            <Button title={buttonLabels.backToLogin} onPress={() => router.back()} color="#666666" />
           </View>
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundWhite },
-  inner: { flex: 1, padding: spacing.xl, justifyContent: "center" },
-  title: { fontSize: fontSizes.title, fontWeight: fontWeights.bold, marginBottom: spacing.xxl, textAlign: "center", color: colors.textPrimary },
-  inputContainer: { gap: spacing.lg, marginBottom: spacing.xl },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
-    borderRadius: 8,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: fontSizes.lg,
-    backgroundColor: colors.backgroundLight,
-  },
-  label: { fontSize: fontSizes.lg, fontWeight: fontWeights.semibold, marginBottom: spacing.md, color: colors.textPrimary },
-  roleContainer: { flexDirection: "row", gap: spacing.md, marginBottom: spacing.xxl },
-  roleButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
-    borderRadius: 8,
-    padding: spacing.lg,
-    alignItems: "center",
-    backgroundColor: colors.backgroundLight,
-  },
-  roleButtonActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryLight,
-  },
-  roleText: {
-    fontSize: fontSizes.lg,
-    color: colors.textSecondary,
-  },
-  roleTextActive: {
-    color: colors.primary,
-    fontWeight: fontWeights.semibold,
-  },
-  buttonContainer: { gap: spacing.md },
-});

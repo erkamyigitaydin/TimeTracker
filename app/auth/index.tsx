@@ -1,9 +1,8 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Button, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import { Button, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { buttonLabels, messages, placeholders, routes, screenTitles } from "../../src/constants/ui";
-import { colors, fontSizes, fontWeights, spacing } from "../theme";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -23,16 +22,16 @@ export default function LoginScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        className="flex-1 bg-white"
       >
-        <View style={styles.inner}>
-          <Text style={styles.title}>{screenTitles.timeTracker}</Text>
+        <View className="flex-1 px-xl justify-center">
+          <Text className="text-4xl font-bold mb-2xl text-center text-gray-700">{screenTitles.timeTracker}</Text>
 
-          <View style={styles.inputContainer}>
+          <View className="gap-lg mb-xl">
             <TextInput
-              style={styles.input}
+              className="border border-gray-200 rounded-md px-lg py-md text-lg bg-gray-50"
               placeholder={placeholders.email}
-              placeholderTextColor={colors.textPlaceholder}
+              placeholderTextColor="#CCCCCC"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -40,21 +39,20 @@ export default function LoginScreen() {
             />
 
             <TextInput
-              style={styles.input}
+              className="border border-gray-200 rounded-md px-lg py-md text-lg bg-gray-50"
               placeholder={placeholders.password}
-              placeholderTextColor={colors.textPlaceholder}
-
+              placeholderTextColor="#CCCCCC"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
             />
           </View>
 
-          <View style={styles.buttonContainer}>
+          <View className="gap-md">
             <Button title={buttonLabels.login} onPress={handleLogin} />
           </View>
 
-          <View style={styles.footer}>
+          <View className="mt-2xl items-center gap-sm">
             <Text>{messages.dontHaveAccount}</Text>
             <Button
               title={buttonLabels.createAccount}
@@ -66,21 +64,3 @@ export default function LoginScreen() {
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundWhite },
-  inner: { flex: 1, padding: spacing.xl, justifyContent: "center" },
-  title: { fontSize: fontSizes.title, fontWeight: fontWeights.bold, marginBottom: spacing.xxl, textAlign: "center", color: colors.textPrimary },
-  inputContainer: { gap: spacing.lg, marginBottom: spacing.xl },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
-    borderRadius: 8,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: fontSizes.lg,
-    backgroundColor: colors.backgroundLight,
-  },
-  buttonContainer: { gap: spacing.md },
-  footer: { marginTop: spacing.xxl, alignItems: "center", gap: spacing.sm },
-});
