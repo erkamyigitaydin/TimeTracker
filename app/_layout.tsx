@@ -1,3 +1,4 @@
+import { TimeEntryProvider } from "@/context/TimeEntryContext";
 import { Slot } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AccountantProvider } from "../context/AccountantContext";
@@ -10,7 +11,9 @@ export default function RootLayout() {
       <AuthProvider>
         <EmployeeProvider>
           <AccountantProvider>
+            <TimeEntryProvider>
             <Slot />
+            </TimeEntryProvider>
           </AccountantProvider>
         </EmployeeProvider>
       </AuthProvider>
