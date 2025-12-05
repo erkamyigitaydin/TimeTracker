@@ -5,6 +5,8 @@ export type TimeEntry = {
   userName: string;
   clientName: string;
   projectName: string;
+  clientId?: string;
+  projectId?: string;
   description: string;
   date: string; // YYYY-MM-DD format
   start: string; // ISO timestamp

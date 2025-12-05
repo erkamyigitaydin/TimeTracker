@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext } from "react";
-import { ALL_EMPLOYEES } from "./mockData";
+import { useAuth } from "./AuthContext";
 
 export type DailyEntry = {
   id: string;
@@ -16,14 +16,13 @@ type EmployeeContextType = {
 const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);
 
 export function EmployeeProvider({ children }: { children: ReactNode }) {
-  // Use first employee as logged-in user
-  const currentEmployee = ALL_EMPLOYEES[0];
+  const { user } = useAuth();
 
   return (
     <EmployeeContext.Provider
       value={{
-        currentEmployeeId: currentEmployee.id,
-        currentEmployeeName: currentEmployee.name,
+        currentEmployeeId: user?.id || '',
+        currentEmployeeName: user?.fullName || 'Guest',
       }}
     >
       {children}

@@ -8,23 +8,22 @@ import { useAccountant } from "../../context/AccountantContext";
 import { dateFormats, labels, routes, screenTitles, symbols } from "../../src/constants/ui";
 
 export default function AccountantDashboardScreen() {
-  const { currentMonth, nextMonth, previousMonth, getMonthData } = useAccountant();
+  const { currentAccountantName, currentMonth, nextMonth, previousMonth, getMonthData } = useAccountant();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const monthData = getMonthData();
 
   return (
-    <View className="flex-1 bg-white">
-      {/* Sidebar */}
+    <View className="flex-1 bg-gray-50">
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         activeRoute="dashboard"
         menuItems={accountantMenuItems}
-        userName="Sarah Johnson"
+        userName={currentAccountantName}
         userRole="Accountant"
-        avatarColor="bg-emerald-500"
+        avatarColor="bg-violet-500"
       />
 
       {/* Title Bar */}

@@ -7,8 +7,10 @@ import {
 } from '../utils/timer/timeCalculations';
 
 interface SaveEntryData {
-  client: string;
-  project: string;
+  clientId: string;
+  clientName: string;
+  projectId: string;
+  projectName: string;
   description: string;
   date: string;
   startTime: string;
@@ -50,8 +52,10 @@ export function useTimeEntryActions(
         id: Date.now().toString(),
         userId: currentEmployeeId,
         userName: currentEmployeeName,
-        clientName: data.client.trim(),
-        projectName: data.project.trim(),
+        clientId: data.clientId,
+        clientName: data.clientName.trim(),
+        projectId: data.projectId,
+        projectName: data.projectName.trim(),
         description: data.description.trim(),
         date: data.date,
         start: startDate.toISOString(),
@@ -102,8 +106,10 @@ export function useTimeEntryActions(
       const updatedEntry: TimeEntry = {
         ...entry,
         description: data.description.trim(),
-        clientName: data.client.trim(),
-        projectName: data.project.trim(),
+        clientId: data.clientId,
+        clientName: data.clientName.trim(),
+        projectId: data.projectId,
+        projectName: data.projectName.trim(),
         date: data.date,
         start: startDate.toISOString(),
         end: endDate.toISOString(),

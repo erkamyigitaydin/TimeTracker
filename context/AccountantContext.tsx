@@ -1,5 +1,6 @@
 import { addMonths, format, subMonths } from "date-fns";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 import { ALL_EMPLOYEES, generateEmployeeMockData } from "./mockData";
 
 export interface EmployeeEntry {
@@ -22,6 +23,7 @@ export interface EmployeeMonthData {
 }
 
 interface AccountantContextType {
+  currentAccountantName: string;
   currentMonth: Date;
   nextMonth: () => void;
   previousMonth: () => void;
@@ -55,6 +57,7 @@ const generateMockAccountantData = (month: Date): EmployeeMonthData[] => {
 };
 
 export function AccountantProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [mockData, setMockData] = useState<Map<string, EmployeeMonthData[]>>(() => {
     // Initialize with current month data
@@ -109,6 +112,7 @@ export function AccountantProvider({ children }: { children: ReactNode }) {
   return (
     <AccountantContext.Provider
       value={{
+        currentAccountantName: user?.fullName || 'Accountant',
         currentMonth,
         nextMonth,
         previousMonth,

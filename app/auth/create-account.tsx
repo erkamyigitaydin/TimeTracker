@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { buttonLabels, labels, messages, placeholders, roles, screenTitles, type Role } from "../../src/constants/ui";
 
 export default function CreateAccountScreen() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRoleState] = useState<Role>(roles.employee);
@@ -13,12 +14,11 @@ export default function CreateAccountScreen() {
   const router = useRouter();
 
   const handleCreate = () => {
-    if (!email || !password) {
+    if (!fullName || !email || !password) {
       alert(messages.fillAllFields);
       return;
     }
-    // Register the user and auto-login
-    register(email, password, role);
+    register(fullName, email, password, role);
   };
 
   return (
@@ -31,6 +31,14 @@ export default function CreateAccountScreen() {
           <Text className="text-4xl font-bold mb-2xl text-center text-gray-700">{screenTitles.createAccount}</Text>
 
           <View className="gap-lg mb-xl">
+            <TextInput
+              className="border border-gray-200 rounded-md px-lg py-md text-lg bg-gray-50"
+              placeholder="Full Name"
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="words"
+            />
+
             <TextInput
               className="border border-gray-200 rounded-md px-lg py-md text-lg bg-gray-50"
               placeholder={placeholders.email}

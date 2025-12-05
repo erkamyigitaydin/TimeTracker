@@ -2,16 +2,17 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
 import {
-    Animated,
-    Dimensions,
-    Modal,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Animated,
+  Dimensions,
+  Modal,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { useProfileIcon } from "../hooks/useProfileIcon";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const SIDEBAR_WIDTH = SCREEN_WIDTH * 0.75;
@@ -27,9 +28,9 @@ export interface MenuItem {
 export const employeeMenuItems: MenuItem[] = [
   { id: "dashboard", label: "Dashboard", icon: "home", route: "/employee" },
   { id: "timer", label: "Timer", icon: "clock", route: "/employee/timer" },
-  { id: "projects", label: "Projects", icon: "folder", route: "/employee/my-projects" },
   { id: "clients", label: "Clients", icon: "users", route: "/employee/clients" },
-  { id: "settings", label: "Settings", icon: "settings", route: "/employee/settings" },
+  { id: "projects", label: "Projects", icon: "folder", route: "/employee/projects" },
+  { id: "settings", label: "Settings", icon: "settings", route: "/settings" },
 ];
 
 // Accountant menu items
@@ -37,7 +38,7 @@ export const accountantMenuItems: MenuItem[] = [
   { id: "dashboard", label: "Dashboard", icon: "home", route: "/accountant" },
   { id: "employees", label: "Employees", icon: "users" },
   { id: "reports", label: "Reports", icon: "bar-chart-2" },
-  { id: "settings", label: "Settings", icon: "settings" },
+  { id: "settings", label: "Settings", icon: "settings", route: "/settings" },
 ];
 
 interface SidebarProps {
@@ -61,7 +62,8 @@ export default function Sidebar({
 }: SidebarProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const { profileIcon } = useProfileIcon(user?.id);
   
   const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -96,8 +98,6 @@ export default function Sidebar({
     onClose();
     logout();
   };
-
-  const userInitial = userName.charAt(0).toUpperCase();
 
   return (
     <Modal
@@ -179,9 +179,8 @@ export default function Sidebar({
         <View className="border-t border-gray-100 px-4 py-4">
           {/* User Profile */}
           <View className="flex-row items-center gap-3 mb-3">
-            <View className={`w-10 h-10 rounded-full ${avatarColor} items-center justify-center`}>
-              <Text className="text-white font-bold text-base">{userInitial}</Text>
-              
+            <View className={`w-12 h-12 rounded-full ${avatarColor} items-center justify-center`}>
+              <Text className="text-2xl">{profileIcon}</Text>
             </View>
             <View className="flex-1">
               <Text className="text-sm font-semibold text-gray-800">{userName}</Text>

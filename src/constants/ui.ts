@@ -14,9 +14,8 @@ export const routes = {
   employeeDailyEntry: "/employee/daily-entry",
   employeeDayDetails: "/employee/day-details",
   employeeUploadPdf: "/employee/upload-pdf",
+  employeeClients: "/employee/clients",
   employeeProjects: "/employee/projects",
-  employeeMyProjects: "/employee/my-projects",
-  employeeProjectDetails: "/employee/project-details",
   
   // Accountant routes
   accountant: "/accountant",

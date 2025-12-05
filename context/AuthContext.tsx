@@ -6,6 +6,8 @@ import { messages, roles, routes, type Role } from "../src/constants/ui";
 type RoleOrNull = Role | null;
 
 type User = {
+  id: string;
+  fullName: string;
   email: string;
   password: string;
   role: Role;
@@ -13,8 +15,9 @@ type User = {
 
 type AuthContextType = {
   role: RoleOrNull;
+  user: User | null;
   login: (email: string, password: string) => void;
-  register: (email: string, password: string, role: Role) => void;
+  register: (fullName: string, email: string, password: string, role: Role) => void;
   logout: () => void;
 };
 
@@ -22,16 +25,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<RoleOrNull>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const router = useRouter();
 
   const login = (email: string, password: string) => {
-    const user = users.find((u) => u.email === email && u.password === password);
-    if (user) {
-      setRole(user.role);
-      if (user.role === roles.employee) {
+    const foundUser = users.find((u) => u.email === email && u.password === password);
+    if (foundUser) {
+      setRole(foundUser.role);
+      setUser(foundUser);
+      if (foundUser.role === roles.employee) {
         router.replace(routes.employee as any);
-      } else if (user.role === roles.accountant) {
+      } else if (foundUser.role === roles.accountant) {
         router.replace(routes.accountant as any);
       }
     } else {
@@ -39,18 +44,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = (email: string, password: string, role: Role) => {
-    // Check if user already exists
+  const register = (fullName: string, email: string, password: string, role: Role) => {
     if (users.some((u) => u.email === email)) {
       alert(messages.userExists);
       return;
     }
     
-    const newUser = { email, password, role };
+    const newUser = { 
+      id: Date.now().toString() + Math.random().toString(36), 
+      fullName,
+      email, 
+      password, 
+      role 
+    };
     setUsers((prev) => [...prev, newUser]);
     
-    // Auto login after register
     setRole(role);
+    setUser(newUser);
     if (role === roles.employee) {
       router.replace(routes.employee as any);
     } else if (role === roles.accountant) {
@@ -60,11 +70,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setRole(null);
+    setUser(null);
     router.replace(routes.auth as any);
   };
 
   return (
-    <AuthContext.Provider value={{ role, login, register, logout }}>
+    <AuthContext.Provider value={{ role, user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

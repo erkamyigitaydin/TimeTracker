@@ -37,16 +37,8 @@ export default function TimerScreen() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isTimerEntry, setIsTimerEntry] = useState(false);
 
-  // Time entries state from Context
-  const { getUserEntries } = useTimeEntries();
+  const { timeEntries } = useTimeEntries();
 
-  // Filter entries for current user
-  const userTimeEntries = useMemo(
-    () => getUserEntries(currentEmployeeId),
-    [currentEmployeeId, getUserEntries]
-  );
-
-  // Time entry CRUD actions
   const {
     createEntry,
     updateEntryData,
@@ -100,22 +92,22 @@ export default function TimerScreen() {
 
   // Save time entry from modal
   const handleSaveEntry = async (data: {
-    client: string;
-    project: string;
+    clientId: string;
+    clientName: string;
+    projectId: string;
+    projectName: string;
     description: string;
     date: string;
     startTime: string;
     endTime: string;
   }) => {
     if (modalMode === 'edit' && editingEntry) {
-      // Update existing entry
       const result = await updateEntryData(editingEntry, data);
       if (result.success) {
         setIsModalVisible(false);
         setEditingEntry(null);
       }
     } else {
-      // Create new entry
       const result = await createEntry(data);
       if (result.success) {
         setIsModalVisible(false);
@@ -128,19 +120,19 @@ export default function TimerScreen() {
   // Convert time entries to calendar events
   const calendarEvents: CalendarEvent[] = useMemo(
     () =>
-      userTimeEntries.map((entry) => ({
+      timeEntries.map((entry) => ({
         title: `${entry.description} - ${entry.projectName}`,
         start: new Date(entry.start),
         end: new Date(entry.end),
         id: entry.id,
-        color: getEntryColor(entry, userTimeEntries),
+        color: getEntryColor(entry, timeEntries),
       })),
-    [userTimeEntries]
+    [timeEntries]
   );
 
   // Handle pressing on calendar event
   const handleEventPress = (event: CalendarEvent) => {
-    const entry = userTimeEntries.find((e) => e.id === event.id);
+    const entry = timeEntries.find((e) => e.id === event.id);
     if (entry) {
       setEditingEntry(entry);
       setModalMode('edit');
@@ -223,7 +215,7 @@ export default function TimerScreen() {
         <CalendarView
           calendarDate={calendarDate}
           calendarMode={calendarMode}
-          userTimeEntries={userTimeEntries}
+          userTimeEntries={timeEntries}
           calendarEvents={calendarEvents}
           onModeChange={setCalendarMode}
           onDateChange={setCalendarDate}

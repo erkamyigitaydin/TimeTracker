@@ -3,7 +3,9 @@ import { Slot } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AccountantProvider } from "../context/AccountantContext";
 import { AuthProvider } from "../context/AuthContext";
+import { ClientProvider } from "../context/ClientContext";
 import { EmployeeProvider } from "../context/EmployeeContext";
+import { ProjectProvider } from "../context/ProjectContext";
 
 export default function RootLayout() {
   return (
@@ -11,9 +13,13 @@ export default function RootLayout() {
       <AuthProvider>
         <EmployeeProvider>
           <AccountantProvider>
-            <TimeEntryProvider>
-            <Slot />
-            </TimeEntryProvider>
+            <ClientProvider>
+              <ProjectProvider>
+                <TimeEntryProvider>
+                  <Slot />
+                </TimeEntryProvider>
+              </ProjectProvider>
+            </ClientProvider>
           </AccountantProvider>
         </EmployeeProvider>
       </AuthProvider>

@@ -5,6 +5,7 @@ import DateTimePicker, {
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import {
+    Alert,
     Keyboard,
     KeyboardAvoidingView,
     Modal,
@@ -16,7 +17,10 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native';
+import { useClients } from '../../context/ClientContext';
+import { useProjects } from '../../context/ProjectContext';
 import { TimeEntry } from '../../types/timeEntry';
+import InlineSearchPicker, { PickerItem } from '../InlineSearchPicker';
 
 type TimeEntryModalProps = {
   visible: boolean;
@@ -29,8 +33,10 @@ type TimeEntryModalProps = {
   initialDate?: Date;
   onClose: () => void;
   onSave: (data: {
-    client: string;
-    project: string;
+    clientId: string;
+    clientName: string;
+    projectId: string;
+    projectName: string;
     description: string;
     date: string;
     startTime: string;
@@ -54,9 +60,14 @@ export default function TimeEntryModal({
   onContinue,
   onDelete,
 }: TimeEntryModalProps) {
+  const { clients } = useClients();
+  const { getProjectsByClientId } = useProjects();
+
   const [modalDescription, setModalDescription] = useState('');
-  const [modalClient, setModalClient] = useState('');
-  const [modalProject, setModalProject] = useState('');
+  const [modalClientId, setModalClientId] = useState('');
+  const [modalClientName, setModalClientName] = useState('');
+  const [modalProjectId, setModalProjectId] = useState('');
+  const [modalProjectName, setModalProjectName] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [modalStartTime, setModalStartTime] = useState(
     initialStartTime || format(new Date(), 'HH:mm')
@@ -68,6 +79,10 @@ export default function TimeEntryModal({
     null
   );
   const [iosPickerTempDate, setIosPickerTempDate] = useState(new Date());
+  const [clientPickerVisible, setClientPickerVisible] = useState(false);
+  const [projectPickerVisible, setProjectPickerVisible] = useState(false);
+  const [clientSearchQuery, setClientSearchQuery] = useState('');
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
 
   const isEditMode = mode === 'edit';
 
@@ -75,10 +90,16 @@ export default function TimeEntryModal({
   useEffect(() => {
     if (!visible) {
       setIosPickerMode(null);
+      setClientPickerVisible(false);
+      setProjectPickerVisible(false);
+      setClientSearchQuery('');
+      setProjectSearchQuery('');
       if (!isEditMode) {
         setModalDescription('');
-        setModalClient('');
-        setModalProject('');
+        setModalClientId('');
+        setModalClientName('');
+        setModalProjectId('');
+        setModalProjectName('');
         const now = new Date();
         const currentTime = format(now, 'HH:mm');
         setSelectedDate(now);
@@ -92,8 +113,10 @@ export default function TimeEntryModal({
   useEffect(() => {
     if (isEditMode && entry) {
       setModalDescription(entry.description);
-      setModalClient(entry.clientName);
-      setModalProject(entry.projectName);
+      setModalClientId(entry.clientId || '');
+      setModalClientName(entry.clientName);
+      setModalProjectId(entry.projectId || '');
+      setModalProjectName(entry.projectName);
       if (entry.date) {
         setSelectedDate(new Date(entry.date));
       }
@@ -102,8 +125,10 @@ export default function TimeEntryModal({
     } else {
       // Clear form for create mode
       setModalDescription('');
-      setModalClient('');
-      setModalProject('');
+      setModalClientId('');
+      setModalClientName('');
+      setModalProjectId('');
+      setModalProjectName('');
       if (initialDate) {
         setSelectedDate(initialDate);
       } else if (timerStartTime) {
@@ -129,22 +154,24 @@ export default function TimeEntryModal({
 
   const handleSave = () => {
     // Validate all required fields
-    if (!modalClient.trim()) {
-      alert('Please enter a client name');
+    if (!modalClientId) {
+      Alert.alert('Validation Error', 'Please select a client');
       return;
     }
-    if (!modalProject.trim()) {
-      alert('Please enter a project name');
+    if (!modalProjectId) {
+      Alert.alert('Validation Error', 'Please select a project');
       return;
     }
     if (!modalDescription.trim()) {
-      alert('Please enter a description');
+      Alert.alert('Validation Error', 'Please enter a description');
       return;
     }
     
     onSave({
-      client: modalClient,
-      project: modalProject,
+      clientId: modalClientId,
+      clientName: modalClientName,
+      projectId: modalProjectId,
+      projectName: modalProjectName,
       description: modalDescription,
       date: format(selectedDate, 'yyyy-MM-dd'),
       startTime: modalStartTime,
@@ -152,8 +179,10 @@ export default function TimeEntryModal({
     });
     // Reset form
     setModalDescription('');
-    setModalClient('');
-    setModalProject('');
+    setModalClientId('');
+    setModalClientName('');
+    setModalProjectId('');
+    setModalProjectName('');
     setSelectedDate(new Date());
   };
 
@@ -237,6 +266,30 @@ export default function TimeEntryModal({
     setIosPickerMode(null);
   };
 
+  const filteredClients: PickerItem[] = clients
+    .filter((client) =>
+      client.name.toLowerCase().includes(clientSearchQuery.toLowerCase()) ||
+      client.email?.toLowerCase().includes(clientSearchQuery.toLowerCase())
+    )
+    .map((client) => ({
+      id: client.id,
+      name: client.name,
+      subtitle: client.email,
+    }));
+
+  const filteredProjects: PickerItem[] = modalClientId
+    ? getProjectsByClientId(modalClientId)
+        .filter((project) =>
+          project.name.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
+          project.code?.toLowerCase().includes(projectSearchQuery.toLowerCase())
+        )
+        .map((project) => ({
+          id: project.id,
+          name: project.name,
+          badge: project.code,
+        }))
+    : [];
+
   return (
     <>
       {visible && (
@@ -254,7 +307,6 @@ export default function TimeEntryModal({
                   keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
                 >
                   <View className="bg-white rounded-t-3xl px-6 pt-6 pb-8">
-              {/* Header with Title and Close Button */}
               <View className="flex-row items-center justify-between mb-2">
                 <Text className="text-2xl font-bold text-gray-900">
                   {isEditMode ? 'Edit Time Entry' : 'Time Entry'}
@@ -268,7 +320,6 @@ export default function TimeEntryModal({
                 </TouchableOpacity>
               </View>
 
-              {/* Entry Info for Edit Mode */}
               {isEditMode && entry && (
                 <View className="bg-blue-50 p-3 rounded-xl mb-3">
                   <View className="flex-row items-center justify-between">
@@ -296,7 +347,6 @@ export default function TimeEntryModal({
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
               >
-                {/* Date Selection */}
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Date
                 </Text>
@@ -311,29 +361,92 @@ export default function TimeEntryModal({
                   <Feather name="calendar" size={20} color="#6B7280" />
                 </TouchableOpacity>
 
-                {/* Client */}
                 <Text className="text-sm font-medium text-gray-700 mb-2">
-                  Client
+                  Client <Text className="text-red-500">*</Text>
                 </Text>
-                <TextInput
-                  className="bg-gray-100 px-4 py-3 rounded-xl mb-4 text-gray-900"
-                  placeholder="Client name"
-                  value={modalClient}
-                  onChangeText={setModalClient}
+                
+                <InlineSearchPicker
+                  visible={clientPickerVisible}
+                  selectedId={modalClientId}
+                  items={filteredClients}
+                  searchQuery={clientSearchQuery}
+                  placeholder="Search clients..."
+                  title="Select Client"
+                  emptyMessage={clients.length === 0 ? 'No clients available' : 'No clients found'}
+                  onSelect={(item) => {
+                    setModalClientId(item.id);
+                    setModalClientName(item.name);
+                    if (modalClientId !== item.id) {
+                      setModalProjectId('');
+                      setModalProjectName('');
+                    }
+                    setClientPickerVisible(false);
+                    setClientSearchQuery('');
+                  }}
+                  onSearchChange={setClientSearchQuery}
+                  onClose={() => {
+                    setClientPickerVisible(false);
+                    setClientSearchQuery('');
+                  }}
                 />
 
-                {/* Project */}
+                {!clientPickerVisible && (
+                  <TouchableOpacity
+                    onPress={() => setClientPickerVisible(true)}
+                    className="bg-gray-100 px-4 py-3 rounded-xl mb-4 flex-row items-center justify-between"
+                    activeOpacity={0.7}
+                  >
+                    <Text className={modalClientName ? 'text-base text-gray-900' : 'text-base text-gray-400'}>
+                      {modalClientName || 'Select a client'}
+                    </Text>
+                    <Feather name="chevron-down" size={20} color="#6B7280" />
+                  </TouchableOpacity>
+                )}
+
                 <Text className="text-sm font-medium text-gray-700 mb-2">
-                  Project
+                  Project <Text className="text-red-500">*</Text>
                 </Text>
-                <TextInput
-                  className="bg-gray-100 px-4 py-3 rounded-xl mb-4 text-gray-900"
-                  placeholder="Project name"
-                  value={modalProject}
-                  onChangeText={setModalProject}
+                
+                <InlineSearchPicker
+                  visible={projectPickerVisible}
+                  selectedId={modalProjectId}
+                  items={filteredProjects}
+                  searchQuery={projectSearchQuery}
+                  placeholder="Search projects..."
+                  title="Select Project"
+                  emptyMessage={modalClientId ? 'No projects found' : 'Select a client first'}
+                  onSelect={(item) => {
+                    setModalProjectId(item.id);
+                    setModalProjectName(item.name);
+                    setProjectPickerVisible(false);
+                    setProjectSearchQuery('');
+                  }}
+                  onSearchChange={setProjectSearchQuery}
+                  onClose={() => {
+                    setProjectPickerVisible(false);
+                    setProjectSearchQuery('');
+                  }}
                 />
 
-                {/* Description */}
+                {!projectPickerVisible && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (!modalClientId) {
+                        Alert.alert('Select Client First', 'Please select a client before choosing a project');
+                        return;
+                      }
+                      setProjectPickerVisible(true);
+                    }}
+                    className="bg-gray-100 px-4 py-3 rounded-xl mb-4 flex-row items-center justify-between"
+                    activeOpacity={0.7}
+                  >
+                    <Text className={modalProjectName ? 'text-base text-gray-900' : 'text-base text-gray-400'}>
+                      {modalProjectName || 'Select a project'}
+                    </Text>
+                    <Feather name="chevron-down" size={20} color="#6B7280" />
+                  </TouchableOpacity>
+                )}
+
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Description
                 </Text>
@@ -349,7 +462,6 @@ export default function TimeEntryModal({
                   returnKeyType="done"
                 />
 
-                {/* Time Selection */}
                 <View className="bg-blue-50 p-4 rounded-xl mb-4">
                   <View className="flex-row items-center justify-between mb-3">
                     <View className="flex-1 mr-2">
@@ -403,7 +515,6 @@ export default function TimeEntryModal({
                   )}
                 </View>
 
-              {/* Buttons */}
               <View className="gap-3 mt-4 mb-6">
                 {isEditMode ? (
                   <View className="flex-row gap-3">
