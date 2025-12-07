@@ -1,23 +1,23 @@
+import Sidebar, { employeeMenuItems } from '@/components/Sidebar';
+import { useClients } from '@/context/ClientContext';
+import { useEmployee } from '@/context/EmployeeContext';
+import { Client } from '@/types/client';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-    Alert,
-    FlatList,
-    Keyboard,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import Sidebar, { employeeMenuItems } from '../../components/Sidebar';
-import { useClients } from '../../context/ClientContext';
-import { useEmployee } from '../../context/EmployeeContext';
-import { Client } from '../../types/client';
 
 export default function ClientsScreen() {
   const { currentEmployeeName } = useEmployee();
@@ -241,7 +241,7 @@ export default function ClientsScreen() {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1 justify-end bg-black/50">
-            <TouchableWithoutFeedback onPress={() => {}}>
+            <TouchableWithoutFeedback onPress={() => { }}>
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={0}

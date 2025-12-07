@@ -1,11 +1,11 @@
+import Sidebar, { employeeMenuItems } from "@/components/Sidebar";
+import { screenTitles } from "@/constants/ui";
+import { useEmployee } from "@/context/EmployeeContext";
+import { useTimeEntries } from "@/context/TimeEntryContext";
 import { Feather } from '@expo/vector-icons';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { useMemo, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import Sidebar, { employeeMenuItems } from "../../components/Sidebar";
-import { useEmployee } from "../../context/EmployeeContext";
-import { useTimeEntries } from "../../context/TimeEntryContext";
-import { screenTitles } from "../../src/constants/ui";
 
 export default function EmployeeHomeScreen() {
   const { currentEmployeeName } = useEmployee();
@@ -56,9 +56,9 @@ export default function EmployeeHomeScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         activeRoute="dashboard"
         menuItems={employeeMenuItems}
         userName={currentEmployeeName || "User"}
@@ -123,7 +123,7 @@ export default function EmployeeHomeScreen() {
                 <Feather name="trending-up" size={24} color="white" />
               </View>
               <Text className="text-3xl font-bold text-white mb-1">
-                {monthlyStats.daysWorked > 0 
+                {monthlyStats.daysWorked > 0
                   ? (monthlyStats.totalHours / monthlyStats.daysWorked).toFixed(1)
                   : '0'}h
               </Text>
@@ -151,7 +151,7 @@ export default function EmployeeHomeScreen() {
                     </Text>
                   </View>
                   <View className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <View 
+                    <View
                       className="h-full bg-blue-500 rounded-full"
                       style={{ width: `${parseFloat(project.percentage)}%` }}
                     />

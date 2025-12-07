@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { projectService } from '@/services/projectService';
+import { Project } from '@/types/project';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { Project } from '../types/project';
 
 type ProjectContextType = {
   projects: Project[];
@@ -15,8 +15,6 @@ type ProjectContextType = {
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-const STORAGE_KEY = '@projects';
-
 export function ProjectProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,10 +25,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   const loadProjects = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
-      if (jsonValue != null) {
-        setProjects(JSON.parse(jsonValue));
-      }
+      const data = await projectService.getProjects();
+      setProjects(data);
     } catch (e) {
       console.error('Failed to load projects', e);
       Alert.alert('Error', 'Failed to load projects');
@@ -39,42 +35,39 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveProjects = async (projectList: Project[]) => {
+  const addProject = async (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Promise<Project> => {
     try {
-      const jsonValue = JSON.stringify(projectList);
-      await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
-      setProjects(projectList);
+      const newProject = await projectService.addProject(projectData);
+      setProjects((prev) => [...prev, newProject]);
+      return newProject;
     } catch (e) {
-      console.error('Failed to save projects', e);
-      Alert.alert('Error', 'Failed to save projects');
+      console.error('Failed to add project', e);
+      Alert.alert('Error', 'Failed to add project');
+      throw e;
     }
   };
 
-  const addProject = async (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Promise<Project> => {
-    const now = new Date().toISOString();
-    const newProject: Project = {
-      ...projectData,
-      id: `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: now,
-      updatedAt: now,
-    };
-    const newProjects = [...projects, newProject];
-    await saveProjects(newProjects);
-    return newProject;
-  };
-
   const updateProject = async (updatedProject: Project) => {
-    const newProjects = projects.map((project) =>
-      project.id === updatedProject.id 
-        ? { ...updatedProject, updatedAt: new Date().toISOString() } 
-        : project
-    );
-    await saveProjects(newProjects);
+    try {
+      await projectService.updateProject(updatedProject);
+      // Reload to ensure we have the correct server/service state (timestamps etc)
+      await loadProjects();
+    } catch (e) {
+      console.error('Failed to update project', e);
+      Alert.alert('Error', 'Failed to update project');
+      throw e;
+    }
   };
 
   const deleteProject = async (id: string) => {
-    const newProjects = projects.filter((project) => project.id !== id);
-    await saveProjects(newProjects);
+    try {
+      await projectService.deleteProject(id);
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+    } catch (e) {
+      console.error('Failed to delete project', e);
+      Alert.alert('Error', 'Failed to delete project');
+      throw e;
+    }
   };
 
   const getProjectById = (id: string) => {

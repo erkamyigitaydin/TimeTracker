@@ -1,17 +1,17 @@
+import Sidebar, { employeeMenuItems } from '@/components/Sidebar';
+import CalendarView from '@/components/timer/CalendarView';
+import TimeEntryModal from '@/components/timer/TimeEntryModal';
+import TimerCard from '@/components/timer/TimerCard';
+import { useEmployee } from '@/context/EmployeeContext';
+import { useTimeEntries } from '@/context/TimeEntryContext';
+import { useTimeEntryActions } from '@/hooks/useTimeEntryActions';
+import { useTimer } from '@/hooks/useTimer';
+import { CalendarEvent, TimeEntry } from '@/types/timeEntry';
+import { getEntryColor } from '@/utils/timer/timeCalculations';
 import { Feather } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import React, { useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import Sidebar, { employeeMenuItems } from '../../components/Sidebar';
-import CalendarView from '../../components/timer/CalendarView';
-import TimeEntryModal from '../../components/timer/TimeEntryModal';
-import TimerCard from '../../components/timer/TimerCard';
-import { useEmployee } from '../../context/EmployeeContext';
-import { useTimeEntries } from '../../context/TimeEntryContext';
-import { useTimeEntryActions } from '../../hooks/useTimeEntryActions';
-import { useTimer } from '../../hooks/useTimer';
-import { CalendarEvent, TimeEntry } from '../../types/timeEntry';
-import { getEntryColor } from '../../utils/timer/timeCalculations';
 
 export default function TimerScreen() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -199,29 +199,29 @@ export default function TimerScreen() {
         </View>
       </View>
 
-        {/* Timer Card Section */}
-        <View className="px-6 py-4 bg-white">
+      {/* Timer Card Section */}
+      <View className="px-6 py-4 bg-white">
 
-          <TimerCard
-            isTimerActive={isTimerActive}
-            elapsedSeconds={elapsedSeconds}
-            timerStartTime={timerStartTime}
-            onStart={startTimer}
-            onStop={handleStopTimer}
-          />
-        </View>
-
-        {/* Calendar */}
-        <CalendarView
-          calendarDate={calendarDate}
-          calendarMode={calendarMode}
-          userTimeEntries={timeEntries}
-          calendarEvents={calendarEvents}
-          onModeChange={setCalendarMode}
-          onDateChange={setCalendarDate}
-          onPressEvent={handleEventPress}
-          onPressCell={handleCellPress}
+        <TimerCard
+          isTimerActive={isTimerActive}
+          elapsedSeconds={elapsedSeconds}
+          timerStartTime={timerStartTime}
+          onStart={startTimer}
+          onStop={handleStopTimer}
         />
+      </View>
+
+      {/* Calendar */}
+      <CalendarView
+        calendarDate={calendarDate}
+        calendarMode={calendarMode}
+        userTimeEntries={timeEntries}
+        calendarEvents={calendarEvents}
+        onModeChange={setCalendarMode}
+        onDateChange={setCalendarDate}
+        onPressEvent={handleEventPress}
+        onPressCell={handleCellPress}
+      />
 
       {/* Time Entry Modal */}
       <TimeEntryModal

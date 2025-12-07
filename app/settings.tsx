@@ -1,16 +1,16 @@
+import Sidebar, { accountantMenuItems, employeeMenuItems } from "@/components/Sidebar";
+import { useAuth } from "@/context/AuthContext";
+import { useProfileIcon } from "@/hooks/useProfileIcon";
 import { Feather } from '@expo/vector-icons';
 import { useState } from "react";
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import Sidebar, { accountantMenuItems, employeeMenuItems } from "../components/Sidebar";
-import { useAuth } from "../context/AuthContext";
-import { useProfileIcon } from "../hooks/useProfileIcon";
 
 const PROFILE_ICONS = ['👤', '🧕', '👨', '👩', '👨‍💼', '👩‍💼', '👨‍💻', '👩‍💻'];
 
 export default function SettingsScreen() {
   const { user } = useAuth();
   const { profileIcon, saveIcon } = useProfileIcon(user?.id);
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -52,7 +52,7 @@ export default function SettingsScreen() {
 
       // TODO: Implement actual password change logic
       // This would typically call an API endpoint
-      
+
       setSuccess('Password changed successfully!');
       setCurrentPassword('');
       setNewPassword('');
@@ -82,9 +82,9 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         activeRoute="settings"
         menuItems={menuItems}
         userName={user.fullName || "User"}
@@ -125,11 +125,10 @@ export default function SettingsScreen() {
                 <TouchableOpacity
                   key={icon}
                   onPress={() => saveIcon(icon)}
-                  className={`w-16 h-16 rounded-xl items-center justify-center border-2 ${
-                    profileIcon === icon
-                      ? 'bg-blue-500 border-blue-600 scale-110' 
+                  className={`w-16 h-16 rounded-xl items-center justify-center border-2 ${profileIcon === icon
+                      ? 'bg-blue-500 border-blue-600 scale-110'
                       : 'bg-slate-50 border-slate-200'
-                  }`}
+                    }`}
                   style={{
                     transform: profileIcon === icon ? [{ scale: 1.1 }] : [{ scale: 1 }],
                   }}
@@ -258,17 +257,15 @@ export default function SettingsScreen() {
 
               {/* Submit Button */}
               <TouchableOpacity
-                className={`mt-6 rounded-xl px-6 py-4 border-2 ${
-                  isLoading 
-                    ? 'bg-slate-100 border-slate-300' 
+                className={`mt-6 rounded-xl px-6 py-4 border-2 ${isLoading
+                    ? 'bg-slate-100 border-slate-300'
                     : 'bg-white border-blue-500'
-                }`}
+                  }`}
                 onPress={handlePasswordChange}
                 disabled={isLoading}
               >
-                <Text className={`text-center font-bold text-base ${
-                  isLoading ? 'text-slate-400' : 'text-blue-600'
-                }`}>
+                <Text className={`text-center font-bold text-base ${isLoading ? 'text-slate-400' : 'text-blue-600'
+                  }`}>
                   {isLoading ? 'Changing Password...' : 'Change Password'}
                 </Text>
               </TouchableOpacity>

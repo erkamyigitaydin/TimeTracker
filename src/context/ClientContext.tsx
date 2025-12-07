@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clientService } from '@/services/clientService';
+import { Client } from '@/types/client';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { Client } from '../types/client';
 
 type ClientContextType = {
   clients: Client[];
@@ -14,8 +14,6 @@ type ClientContextType = {
 
 const ClientContext = createContext<ClientContextType | undefined>(undefined);
 
-const STORAGE_KEY = '@clients';
-
 export function ClientProvider({ children }: { children: ReactNode }) {
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,10 +24,8 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
   const loadClients = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
-      if (jsonValue != null) {
-        setClients(JSON.parse(jsonValue));
-      }
+      const data = await clientService.getClients();
+      setClients(data);
     } catch (e) {
       console.error('Failed to load clients', e);
       Alert.alert('Error', 'Failed to load clients');
@@ -38,42 +34,38 @@ export function ClientProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveClients = async (clientList: Client[]) => {
+  const addClient = async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client> => {
     try {
-      const jsonValue = JSON.stringify(clientList);
-      await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
-      setClients(clientList);
+      const newClient = await clientService.addClient(clientData);
+      setClients((prev) => [...prev, newClient]);
+      return newClient;
     } catch (e) {
-      console.error('Failed to save clients', e);
-      Alert.alert('Error', 'Failed to save clients');
+      console.error('Failed to add client', e);
+      Alert.alert('Error', 'Failed to add client');
+      throw e;
     }
   };
 
-  const addClient = async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client> => {
-    const now = new Date().toISOString();
-    const newClient: Client = {
-      ...clientData,
-      id: `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: now,
-      updatedAt: now,
-    };
-    const newClients = [...clients, newClient];
-    await saveClients(newClients);
-    return newClient;
-  };
-
   const updateClient = async (updatedClient: Client) => {
-    const newClients = clients.map((client) =>
-      client.id === updatedClient.id 
-        ? { ...updatedClient, updatedAt: new Date().toISOString() } 
-        : client
-    );
-    await saveClients(newClients);
+    try {
+      await clientService.updateClient(updatedClient);
+      await loadClients(); // Reload to sync
+    } catch (e) {
+      console.error('Failed to update client', e);
+      Alert.alert('Error', 'Failed to update client');
+      throw e;
+    }
   };
 
   const deleteClient = async (id: string) => {
-    const newClients = clients.filter((client) => client.id !== id);
-    await saveClients(newClients);
+    try {
+      await clientService.deleteClient(id);
+      setClients((prev) => prev.filter((c) => c.id !== id));
+    } catch (e) {
+      console.error('Failed to delete client', e);
+      Alert.alert('Error', 'Failed to delete client');
+      throw e;
+    }
   };
 
   const getClientById = (id: string) => {

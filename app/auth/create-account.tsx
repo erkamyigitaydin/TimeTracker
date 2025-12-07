@@ -1,9 +1,9 @@
 // app/(auth)/create-account.tsx
+import { buttonLabels, labels, messages, placeholders, roles, screenTitles, type Role } from "@/constants/ui";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { useAuth } from "../../context/AuthContext";
-import { buttonLabels, labels, messages, placeholders, roles, screenTitles, type Role } from "../../src/constants/ui";
 
 export default function CreateAccountScreen() {
   const [fullName, setFullName] = useState("");
@@ -23,7 +23,7 @@ export default function CreateAccountScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 bg-white"
       >
@@ -60,33 +60,29 @@ export default function CreateAccountScreen() {
           <Text className="text-lg font-semibold mb-md text-gray-700">{labels.selectRole}</Text>
           <View className="flex-row gap-md mb-2xl">
             <TouchableOpacity
-              className={`flex-1 border rounded-md p-lg items-center ${
-                role === roles.employee 
-                  ? "border-primary bg-primary-light" 
+              className={`flex-1 border rounded-md p-lg items-center ${role === roles.employee
+                  ? "border-primary bg-primary-light"
                   : "border-gray-200 bg-gray-50"
-              }`}
+                }`}
               onPress={() => setRoleState(roles.employee)}
             >
-              <Text className={`text-lg ${
-                role === roles.employee 
-                  ? "text-primary font-semibold" 
+              <Text className={`text-lg ${role === roles.employee
+                  ? "text-primary font-semibold"
                   : "text-gray-500"
-              }`}>Employee</Text>
+                }`}>Employee</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className={`flex-1 border rounded-md p-lg items-center ${
-                role === roles.accountant 
-                  ? "border-primary bg-primary-light" 
+              className={`flex-1 border rounded-md p-lg items-center ${role === roles.accountant
+                  ? "border-primary bg-primary-light"
                   : "border-gray-200 bg-gray-50"
-              }`}
+                }`}
               onPress={() => setRoleState(roles.accountant)}
             >
-              <Text className={`text-lg ${
-                role === roles.accountant 
-                  ? "text-primary font-semibold" 
+              <Text className={`text-lg ${role === roles.accountant
+                  ? "text-primary font-semibold"
                   : "text-gray-500"
-              }`}>Accountant</Text>
+                }`}>Accountant</Text>
             </TouchableOpacity>
           </View>
 

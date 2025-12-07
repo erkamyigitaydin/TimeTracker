@@ -1,25 +1,25 @@
+import InlineSearchPicker, { PickerItem } from '@/components/InlineSearchPicker';
+import Sidebar, { employeeMenuItems } from '@/components/Sidebar';
+import { useClients } from '@/context/ClientContext';
+import { useEmployee } from '@/context/EmployeeContext';
+import { useProjects } from '@/context/ProjectContext';
+import { Project } from '@/types/project';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-    Alert,
-    FlatList,
-    Keyboard,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import InlineSearchPicker, { PickerItem } from '../../components/InlineSearchPicker';
-import Sidebar, { employeeMenuItems } from '../../components/Sidebar';
-import { useClients } from '../../context/ClientContext';
-import { useEmployee } from '../../context/EmployeeContext';
-import { useProjects } from '../../context/ProjectContext';
-import { Project } from '../../types/project';
 
 export default function ProjectsScreen() {
   const { currentEmployeeName } = useEmployee();
@@ -272,7 +272,7 @@ export default function ProjectsScreen() {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1 justify-end bg-black/50">
-            <TouchableWithoutFeedback onPress={() => {}}>
+            <TouchableWithoutFeedback onPress={() => { }}>
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={0}
@@ -302,7 +302,7 @@ export default function ProjectsScreen() {
                     <Text className="text-sm font-medium text-gray-700 mb-2">
                       Client <Text className="text-red-500">*</Text>
                     </Text>
-                    
+
                     <InlineSearchPicker
                       visible={clientPickerVisible}
                       selectedId={clientId}

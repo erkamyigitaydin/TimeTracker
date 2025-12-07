@@ -1,11 +1,11 @@
+import Sidebar, { accountantMenuItems } from "@/components/Sidebar";
+import { dateFormats, labels, routes, screenTitles, symbols } from "@/constants/ui";
+import { useAccountant } from "@/context/AccountantContext";
 import { Feather } from '@expo/vector-icons';
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import Sidebar, { accountantMenuItems } from "../../components/Sidebar";
-import { useAccountant } from "../../context/AccountantContext";
-import { dateFormats, labels, routes, screenTitles, symbols } from "../../src/constants/ui";
 
 export default function AccountantDashboardScreen() {
   const { currentAccountantName, currentMonth, nextMonth, previousMonth, getMonthData } = useAccountant();

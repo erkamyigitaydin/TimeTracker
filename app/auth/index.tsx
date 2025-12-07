@@ -1,8 +1,8 @@
+import { buttonLabels, messages, placeholders, routes, screenTitles } from "@/constants/ui";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
-import { useAuth } from "../../context/AuthContext";
-import { buttonLabels, messages, placeholders, routes, screenTitles } from "../../src/constants/ui";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ export default function LoginScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 bg-white"
       >
